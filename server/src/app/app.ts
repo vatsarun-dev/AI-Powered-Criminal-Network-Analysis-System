@@ -10,7 +10,6 @@ export default function createApp(): Express {
 
   app.use("/api/auth", authRoutes);
 
-  app.use(notFoundHandler);
   app.use(errorHandler);
 
   return app;

@@ -1,53 +1,40 @@
 import { model, Schema, type HydratedDocument } from "mongoose";
 import { comparePassword, hashPassword } from "../utils/password.js";
+import User from "../types/user.ts";
 
-export type User = {
-  name: string;
-  email: string;
-  password: string;
-  role: "user" | "admin";
-  refreshToken?: string;
-};
-
-export type UserMethods = {
-  comparePassword(password: string): Promise<boolean>;
-};
-
-export type UserDocument = HydratedDocument<User, UserMethods>;
-
-const userSchema = new Schema<User, typeof UserModel, UserMethods>(
+const userSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
       trim: true,
       minlength: 2,
-      maxlength: 50
+      maxlength: 50,
     },
     email: {
       type: String,
       required: true,
       trim: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
     },
     password: {
       type: String,
       required: true,
       minlength: 8,
-      select: false
+      select: false,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
     refreshToken: {
       type: String,
-      select: false
-    }
+      select: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.pre("save", async function hashUserPassword(next) {
@@ -55,13 +42,13 @@ userSchema.pre("save", async function hashUserPassword(next) {
     return next();
   }
 
-  this.password = await hashPassword(this.password);
+  this.password = bcrypt.hashSync(this.password, 10);
   next();
 });
 
-userSchema.method("comparePassword", function compareUserPassword(password: string) {
-  return comparePassword(password, this.password);
-});
+userSchema.methods.comparePassword = function () {
+  return bcrypt.compareSync(password, this.password);
+};
 
 const UserModel = model<User, typeof UserModel>("User", userSchema);
 

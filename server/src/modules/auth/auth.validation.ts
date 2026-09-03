@@ -1,40 +1,55 @@
+import validRequest from "../../utils/validRequest.ts";
 import { body } from "express-validator";
-import validateRequest from "../../middlewares/validate.middleware.js";
-
 export const registerValidationRule = [
   body("name")
     .trim()
+    .not()
+    .isIn(["admin", "root", "superuser"])
     .notEmpty()
-    .withMessage("Name is required")
+    .withMessage("Name must be required")
     .isLength({ min: 2, max: 50 })
-    .withMessage("Name must be 2-50 characters"),
+    .withMessage("Name must be 2-50 character"),
   body("email")
     .trim()
+    .not()
+    .contains("+")
     .notEmpty()
     .withMessage("Email is required")
     .normalizeEmail()
     .isEmail()
-    .withMessage("Enter a valid email"),
+    .withMessage("Enter a valid Email"),
+
+  body("designation").trim().optional(),
+
   body("password")
     .notEmpty()
-    .withMessage("Password is required")
-    .isLength({ min: 8, max: 72 })
-    .withMessage("Password must be 8-72 characters")
+    .withMessage("password required")
+    .isLength({ min: 6, max: 10 })
+    .withMessage("password must contain 6-10 words")
     .matches(/\d/)
-    .withMessage("Password must contain at least one digit")
-    .matches(/[!@#$%^&*]/)
-    .withMessage("Password must contain a special character"),
-  validateRequest
+    .withMessage("Must contain at least one digit")
+    .matches(/[!@#$%]/)
+    .withMessage("Must contain a special character"),
+  validRequest,
 ];
-
 export const loginValidationRule = [
   body("email")
     .trim()
+    .not()
+    .contains("+")
     .notEmpty()
     .withMessage("Email is required")
     .normalizeEmail()
     .isEmail()
-    .withMessage("Enter a valid email"),
-  body("password").notEmpty().withMessage("Password is required"),
-  validateRequest
+    .withMessage("Enter a valid Email"),
+  body("password")
+    .notEmpty()
+    .withMessage("password required")
+    .isLength({ min: 6, max: 10 })
+    .withMessage("password must contain 6-10 words")
+    .matches(/\d/)
+    .withMessage("Must contain at least one digit")
+    .matches(/[!@#$%]/)
+    .withMessage("Must contain a special character"),
+  validRequest,
 ];

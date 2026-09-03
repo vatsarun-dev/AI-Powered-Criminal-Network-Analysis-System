@@ -1,9 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 import type { RequestHandler } from "express";
-import AuthService, {
+import AuthService from "./auth.service.ts";
+import {
   type LoginUserRequest,
   type RegisterUserRequest,
-} from "./auth.service.js";
+} from "../../types/Response.ts";
 import { appConstant } from "../../constant/appConstant.js";
 import { successResponse } from "../../utils/ApiResponse.js";
 

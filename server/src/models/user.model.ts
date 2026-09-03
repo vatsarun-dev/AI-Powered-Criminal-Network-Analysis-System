@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
-import { comparePassword, hashPassword } from "../utils/password.js";
-import type { User }from "../types/user.ts";
+import bcrypt from "bcrypt";
+import type { User } from "../types/user.ts";
 
 const userSchema = new Schema(
   {
@@ -31,7 +31,7 @@ const userSchema = new Schema(
     },
     refreshToken: {
       type: String,
-      select: false,
+      select: true,
     },
   },
   { timestamps: true },
@@ -39,11 +39,11 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  this.password = await hashPassword(this.password);
+  this.password = bcrypt.hashSync(this.password, 10);
 });
 
 userSchema.methods.comparePassword = function (password: string) {
-  return comparePassword(password, this.password);
+  return bcrypt.compareSync(password, this.password);
 };
 
 const UserModel = model<User>("User", userSchema);

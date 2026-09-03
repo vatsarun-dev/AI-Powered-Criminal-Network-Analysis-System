@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, type HydratedDocument } from "mongoose";
 import bcrypt from "bcrypt";
 import type { User } from "../types/user.ts";
 
@@ -45,6 +45,8 @@ userSchema.pre("save", async function () {
 userSchema.methods.comparePassword = function (password: string) {
   return bcrypt.compareSync(password, this.password);
 };
+
+export type UserDocument = HydratedDocument<User>;
 
 const UserModel = model<User>("User", userSchema);
 

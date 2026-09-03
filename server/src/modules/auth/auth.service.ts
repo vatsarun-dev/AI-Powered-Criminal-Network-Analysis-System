@@ -72,5 +72,36 @@ export default class AuthService {
     await this.issueAuthCookies(responseUser, res);
 
     return responseUser;
+    
   }
+
+  private toResponseUser(user: AuthUser): AuthResponseUser {
+    return {
+      id: user.id,
+      name: "name" in user && typeof user.name === "string" ? user.name : "",
+      email: user.email,
+      role: user.role ?? "",
+    };
+  }
+
+  private async issueAuthCookies(
+    user: AuthResponseUser,
+    res: Response,
+  ): Promise<void> {
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    const secure = process.env.NODE_ENV === "production";
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure,
+      sameSite: secure ? "strict" : "lax",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure,
+      sameSite: secure ? "strict" : "lax",
+    });
+  }
+  
 }

@@ -1,6 +1,6 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import UserRepo from "../../repository/user.repo.js";
-// import { appConstant } from "../../constant/appConstant.js";
+import { verifyRefreshToken } from "../../utils/token.ts";
 import {
   ConflictError,
   NotFoundError,
@@ -102,5 +102,34 @@ export default class AuthService {
     await this.issueAuthCookies(responseUser, res);
 
     return responseUser;
+  }
+
+  async refreshService(req: Request, res: Response): Promise<AuthResponseUser> {
+    const refresh_token = req.cookies.refreshToken;
+    if (!refresh_token) throw new UnauthorizedError("no cookie found");
+
+    const payload = verifyRefreshToken(refresh_token);
+    if (!user) throw new NotFoundError("no user found");
+
+    const user = await this.userRepo.findByRefreshToken(refresh_token);
+    const accessToken = generateAccessToken(user);
+
+    res.cookie(
+      "accessToken",
+      accessToken,
+      appConstant.cookies.accessTokenOptions,
+    );
+    const responseUser = this.toResponseUser(user);
+    return responseUser;
+  }
+
+  async getMeService(req: Request, res: Response): Promise<AuthResponseUser> {
+    const id = req.user.id;
+    if (!id) throw new UnauthorizedError("Unauthorized");
+    const user = await this.userRepo.findById(id);
+
+    if (!user) throw new NotFoundError("no user  found");
+
+    return user;
   }
 }

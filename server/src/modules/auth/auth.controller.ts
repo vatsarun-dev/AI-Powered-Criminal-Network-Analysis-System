@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import type { RequestHandler } from "express";
+import type { Request, Response, RequestHandler } from "express";
 import AuthService from "./auth.service.ts";
 import {
   type LoginUserRequest,
@@ -11,7 +11,7 @@ import { successResponse } from "../../utils/ApiResponse.js";
 export default class AuthController {
   private readonly authService = new AuthService();
 
-  async registerController(req, res): RequestHandler {
+  async registerController(req: Request, res: Response): RequestHandler {
     const user = await this.authService.register(
       req.body as RegisterUserRequest,
       res,
@@ -21,7 +21,7 @@ export default class AuthController {
       .json(successResponse("User registered successfully", { user }));
   }
 
-  async loginController(req, res): RequestHandler {
+  async loginController(req: Request, res: Response): RequestHandler {
     const user = await this.authService.login(
       req.body as LoginUserRequest,
       res,
@@ -29,5 +29,20 @@ export default class AuthController {
     res
       .status(StatusCodes.OK)
       .json(successResponse("User logged in successfully", { user }));
+  }
+
+  async refreshController(req: Request, res: Response): RequestHandler {
+    const user = await this.authService.refreshService(req, res);
+
+    res
+      .status(StatusCodes.OK)
+      .json(successResponse("access token set successfully", { user }));
+  }
+
+  async getMeController(req: Request, res: Response): RequestHandler {
+    const user = await this.authService.getMeService(req as Request);
+    res
+      .status(StatusCodes.OK)
+      .json(successResponse("user find successfully", { user }));
   }
 }

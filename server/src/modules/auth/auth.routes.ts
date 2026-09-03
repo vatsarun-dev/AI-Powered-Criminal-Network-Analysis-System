@@ -21,4 +21,15 @@ routes.post(
   asyncHandler(authController.loginController.bind(authController)),
 );
 
+routes.post(
+  "/refresh",
+  asyncHandler(authController.refreshController.bind(authController)),
+);
+
+routes.get(
+  "/me",
+  authMiddleware,
+  asyncHandler(authController.getMeController.bind(authController)),
+);
+
 export default routes;

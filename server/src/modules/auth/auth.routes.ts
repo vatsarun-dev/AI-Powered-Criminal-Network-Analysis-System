@@ -13,12 +13,12 @@ const authController = new AuthController();
 routes.post(
   "/register",
   registerValidationRule,
-  asyncHandler(authController.registerController),
+  asyncHandler(authController.registerController.bind(authController)),
 );
 routes.post(
   "/login",
   loginValidationRule,
-  asyncHandler(authController.loginController),
+  asyncHandler(authController.loginController.bind(authController)),
 );
 
 export default routes;

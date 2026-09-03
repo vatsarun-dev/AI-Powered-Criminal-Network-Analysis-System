@@ -1,6 +1,6 @@
-import { model, Schema, type HydratedDocument } from "mongoose";
+import { model, Schema } from "mongoose";
 import { comparePassword, hashPassword } from "../utils/password.js";
-import User from "../types/user.ts";
+import type { User }from "../types/user.ts";
 
 const userSchema = new Schema(
   {
@@ -39,14 +39,13 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  this.password = bcrypt.hashSync(this.password, 10);
-  next();
+  this.password = await hashPassword(this.password);
 });
 
-userSchema.methods.comparePassword = function () {
-  return bcrypt.compareSync(password, this.password);
+userSchema.methods.comparePassword = function (password: string) {
+  return comparePassword(password, this.password);
 };
 
-const UserModel = model<User, typeof UserModel>("User", userSchema);
+const UserModel = model<User>("User", userSchema);
 
 export default UserModel;

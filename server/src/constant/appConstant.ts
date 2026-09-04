@@ -4,7 +4,7 @@ const secures = env.NODE_ENV === "production";
 
 const baseCookieOptions: CookieOptions = {
   httpOnly: true,
-  sameSite: secures ? "sameSite" : "lax",
+  sameSite: secures ? "strict" : "lax",
   secure: env.COOKIE_SECURE,
 };
 

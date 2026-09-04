@@ -1,7 +1,7 @@
 import { Router } from "express";
 import asyncHandler from "../../utils/asyncHandler.js";
-import FileController from "./file.controller.ts";
-import { upload } from "../../service/multer.ts";
+import FileController from "./file.controller.js";
+import { upload } from "../../service/multer.js";
 
 const routes = Router();
 const fileController = new FileController();

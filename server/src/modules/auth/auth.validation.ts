@@ -1,4 +1,4 @@
-import validRequest from "../../utils/validRequest.ts";
+import validRequest from "../../utils/validRequest.js";
 import { body } from "express-validator";
 export const registerValidationRule = [
   body("name")

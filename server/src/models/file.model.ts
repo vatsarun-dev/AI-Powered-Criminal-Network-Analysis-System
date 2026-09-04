@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { File } from "../types/file.ts";
+import type { File } from "../types/file.ts";
 const fileSchema = new Schema(
   {
     originalName: {

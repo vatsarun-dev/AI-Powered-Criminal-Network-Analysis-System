@@ -15,3 +15,11 @@ export type AuthResponseUser = {
   email: string;
   role?: string;
 };
+
+export type FileResponse = {
+  fileId: string;
+  originalName: string;
+  type: string;
+  size: string;
+  status: string;
+};

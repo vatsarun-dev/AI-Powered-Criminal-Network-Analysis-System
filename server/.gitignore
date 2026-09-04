@@ -2,3 +2,11 @@ node_modules
 dist
 .env
 *.log
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+build/
+coverage/
+*.log

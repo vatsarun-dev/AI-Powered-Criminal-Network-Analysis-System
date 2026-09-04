@@ -1,6 +1,8 @@
 import { model, Schema, type HydratedDocument } from "mongoose";
+import bcrypt from "bcrypt";
 import { comparePassword, hashPassword } from "../utils/password.js";
-import User from "../types/user.ts";
+import { User } from "../types/user.js";
+
 
 const userSchema = new Schema(
   {
@@ -26,8 +28,8 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ["admin", "analyst", "officer"],
+      default: "analyst",
     },
     refreshToken: {
       type: String,
@@ -40,13 +42,12 @@ const userSchema = new Schema(
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = bcrypt.hashSync(this.password, 10);
-  next();
 });
 
-userSchema.methods.comparePassword = function () {
+userSchema.methods.comparePassword = function (password: string) {
   return bcrypt.compareSync(password, this.password);
 };
 
-const UserModel = model<User, typeof UserModel>("User", userSchema);
+const UserModel = model<User>("User", userSchema);
 
 export default UserModel;

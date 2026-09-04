@@ -10,7 +10,7 @@ import { successResponse } from "../../utils/ApiResponse.js";
 export default class AuthController {
   private readonly authService = new AuthService();
 
-  async registerController(req, res): RequestHandler {
+  registerController: RequestHandler = async (req, res) => {
     const user = await this.authService.register(
       req.body as RegisterUserRequest,
       res,
@@ -20,7 +20,7 @@ export default class AuthController {
       .json(successResponse("User registered successfully", { user }));
   }
 
-  async loginController(req, res): RequestHandler {
+  loginController: RequestHandler = async (req, res) =>  {
     const user = await this.authService.login(
       req.body as LoginUserRequest,
       res,

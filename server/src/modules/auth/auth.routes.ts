@@ -21,4 +21,8 @@ routes.post(
   asyncHandler(authController.loginController),
 );
 
+routes.get("/me", authMiddleware, (req, res) => {
+  res.status(200).json({ success: true, user: req.user });
+});
+
 export default routes;

@@ -73,4 +73,36 @@ export default class AuthService {
 
     return responseUser;
   }
+  
+  private toResponseUser(user: any): AuthResponseUser {
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  }
+  
+
+private async issueAuthCookies(user: AuthResponseUser, res: Response) {
+  const payload = { id: user.id, email: user.email, role: user.role };
+
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+
+  res.cookie(appConstant.cookies.refreshTokenName, refreshToken, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === "true",
+    sameSite: "strict",
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie(appConstant.cookies.accessTokenName, accessToken, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === "true",
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000,
+  });
+}
+   
 }

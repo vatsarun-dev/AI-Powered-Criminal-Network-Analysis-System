@@ -1,0 +1,59 @@
+.dashboard-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: #1e1e2f;
+  color: #fff;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 220px;
+  background: #f4f4f8;
+  border-right: 1px solid #ddd;
+  padding: 1rem 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar li a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #333;
+  text-decoration: none;
+}
+
+.sidebar li a.active,
+.sidebar li a:hover {
+  background: #e0e0f0;
+  font-weight: 600;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: #fafafa;
+}

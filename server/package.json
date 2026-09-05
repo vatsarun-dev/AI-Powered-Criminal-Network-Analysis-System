@@ -19,6 +19,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "express-validator": "^7.3.2",
+    "fuzzball": "^2.2.6",
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
     "http-status-codes": "^2.3.0",

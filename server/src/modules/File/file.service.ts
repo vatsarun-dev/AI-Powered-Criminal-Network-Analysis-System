@@ -1,20 +1,21 @@
 import { Request, Response, RequestHandler } from "express";
-import { FileType, File } from "../../types/file.ts";
-import { FileModel } from "../../models/file.model.ts";
-import { FileResponse } from "../../types/Response.ts";
+import { FileType, File } from "../../types/file.js";
+import { FileModel } from "../../models/file.model.js";
+import { FileResponse } from "../../types/Response.js";
 
 interface fileReturnType {
   file: Express.Multer.File;
   type: "PDF" | "CDR" | "IPDR";
   caseId: string;
 }
+
 export default class FileService {
   private response(uploadedFile: File): FileResponse {
     return {
-      fileId: uploadedFile._id,
+      fileId: (uploadedFile as File & { _id: string })._id,
       originalName: uploadedFile.originalName,
       type: uploadedFile.type,
-      size: uploadedFile.size,
+      size: String(uploadedFile.size),
       status: uploadedFile.status,
     };
   }
@@ -23,15 +24,15 @@ export default class FileService {
     file: FileType,
     type: string,
     caseId: string,
-  ): fileReturnType {
+  ): Promise<FileResponse> {
     if (!file || !type || !caseId)
-      throw new NotFoundError("all fields are required");
+      throw new Error("all fields are required");
 
     const uploadedFile = await FileModel.create({
       originalName: file.originalname,
       storedName: file.filename,
       mimeType: file.mimetype,
-      size: file.size,
+      size: Number((file as FileType & { size?: number }).size ?? 0),
       type,
       caseId,
       storagePath: file.path,

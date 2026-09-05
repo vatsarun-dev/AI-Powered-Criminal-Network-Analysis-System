@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import UserRepo from "../../repository/user.repo.js";
-import { verifyRefreshToken } from "../../utils/token.ts";
 import {
   ConflictError,
   NotFoundError,
@@ -10,14 +9,14 @@ import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from "../../utils/token.ts";
+} from "../../utils/token.js";
 import type { AuthUser } from "../../types/auth.ts";
 import type {
   RegisterUserRequest,
   LoginUserRequest,
   AuthResponseUser,
 } from "../../types/Response.ts";
-import { appConstant } from "../../constant/appConstant.ts";
+import { appConstant } from "../../constant/appConstant.js";
 /**
  * @vatsarun-dev
  * THIS IS THE SERVICE FILE
@@ -30,7 +29,7 @@ export default class AuthService {
   private toResponseUser(user: AuthUser): AuthResponseUser {
     return {
       id: user.id,
-      name: user.name,
+      name: "name" in user ? String(user.name) : "",
       email: user.email,
       role: user.role ?? "",
     };
@@ -92,7 +91,11 @@ export default class AuthService {
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    const passwordMatches = await user.comparePassword(input.password);
+    const passwordMatches = await (
+      user as typeof user & {
+        comparePassword(password: string): Promise<boolean>;
+      }
+    ).comparePassword(input.password);
 
     if (!passwordMatches) {
       throw new UnauthorizedError("Invalid email or password");
@@ -108,10 +111,10 @@ export default class AuthService {
     const refresh_token = req.cookies.refreshToken;
     if (!refresh_token) throw new UnauthorizedError("no cookie found");
 
-    const payload = verifyRefreshToken(refresh_token);
-    if (!user) throw new NotFoundError("no user found");
+    verifyRefreshToken(refresh_token);
 
     const user = await this.userRepo.findByRefreshToken(refresh_token);
+    if (!user) throw new NotFoundError("no user found");
     const accessToken = generateAccessToken(user);
 
     const responseUser = this.toResponseUser(user);
@@ -119,7 +122,7 @@ export default class AuthService {
     return responseUser;
   }
 
-  async getMeService(req: Request): Promise<AuthResponseUser> {
+  async getMeService(req: Request, res: Response): Promise<AuthResponseUser> {
     const id = req.user.id;
     if (!id) throw new UnauthorizedError("Unauthorized");
     const user = await this.userRepo.findById(id);

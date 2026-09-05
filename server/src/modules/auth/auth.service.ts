@@ -114,22 +114,18 @@ export default class AuthService {
     const user = await this.userRepo.findByRefreshToken(refresh_token);
     const accessToken = generateAccessToken(user);
 
-    res.cookie(
-      "accessToken",
-      accessToken,
-      appConstant.cookies.accessTokenOptions,
-    );
     const responseUser = this.toResponseUser(user);
+    await this.issueAuthCookies(responseUser, res);
     return responseUser;
   }
 
-  async getMeService(req: Request, res: Response): Promise<AuthResponseUser> {
+  async getMeService(req: Request): Promise<AuthResponseUser> {
     const id = req.user.id;
     if (!id) throw new UnauthorizedError("Unauthorized");
     const user = await this.userRepo.findById(id);
 
     if (!user) throw new NotFoundError("no user  found");
 
-    return user;
+    return this.toResponseUser(user);
   }
 }

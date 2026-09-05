@@ -39,6 +39,11 @@ export default class AuthController {
       .json(successResponse("access token set successfully", { user }));
   }
 
+  async logoutController(req: Request, res: Response): Promise<void> {
+    await this.authService.logoutService(req, res);
+    res.status(StatusCodes.OK).json(successResponse("Logged out successfully"));
+  }
+
   async getMeController(req: Request, res: Response): Promise<void> {
     const user = await this.authService.getMeService(req as Request,res as Response);
     res

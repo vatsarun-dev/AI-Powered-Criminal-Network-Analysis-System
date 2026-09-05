@@ -26,6 +26,11 @@ routes.post(
   asyncHandler(authController.refreshController.bind(authController)),
 );
 
+routes.post(
+  "/logout",
+  asyncHandler(authController.logoutController.bind(authController)),
+);
+
 routes.get(
   "/me",
   authMiddleware,

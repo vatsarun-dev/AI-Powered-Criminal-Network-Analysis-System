@@ -1,3 +1,5 @@
+import type { Role } from "./auth.js";
+
 export type RegisterUserRequest = {
   name: string;
   email: string;
@@ -13,7 +15,7 @@ export type AuthResponseUser = {
   id: string;
   name: string;
   email: string;
-  role?: string;
+  role: Role;
 };
 
 export type FileResponse = {

@@ -31,7 +31,7 @@ export default class AuthService {
       id: user.id,
       name: "name" in user ? String(user.name) : "",
       email: user.email,
-      role: user.role ?? "",
+      role: user.role === "admin" ? "admin" : "user",
     };
   }
 
@@ -46,12 +46,12 @@ export default class AuthService {
     await this.userRepo.saveRefreshToken(user.id, refreshToken);
 
     res.cookie(
-      "accessToken",
+      appConstant.cookies.accessTokenName,
       accessToken,
       appConstant.cookies.accessTokenOptions,
     );
     res.cookie(
-      "refreshToken",
+      appConstant.cookies.refreshTokenName,
       refreshToken,
       appConstant.cookies.refreshTokenOptions,
     );
@@ -108,22 +108,52 @@ export default class AuthService {
   }
 
   async refreshService(req: Request, res: Response): Promise<AuthResponseUser> {
-    const refresh_token = req.cookies.refreshToken;
-    if (!refresh_token) throw new UnauthorizedError("no cookie found");
+    const refreshToken = req.cookies[appConstant.cookies.refreshTokenName] as
+      | string
+      | undefined;
+    if (!refreshToken) throw new UnauthorizedError("Refresh token missing");
 
-    verifyRefreshToken(refresh_token);
+    let tokenPayload;
+    try {
+      tokenPayload = verifyRefreshToken(refreshToken);
+    } catch {
+      throw new UnauthorizedError("Invalid or expired refresh token");
+    }
 
-    const user = await this.userRepo.findByRefreshToken(refresh_token);
-    if (!user) throw new NotFoundError("no user found");
-    const accessToken = generateAccessToken(user);
+    const user = await this.userRepo.findByRefreshToken(refreshToken);
+    if (!user || user.id !== tokenPayload.id || user.email !== tokenPayload.email) {
+      throw new UnauthorizedError("Invalid refresh token");
+    }
 
     const responseUser = this.toResponseUser(user);
     await this.issueAuthCookies(responseUser, res);
     return responseUser;
   }
 
+  async logoutService(req: Request, res: Response): Promise<void> {
+    const refreshToken = req.cookies[appConstant.cookies.refreshTokenName] as
+      | string
+      | undefined;
+
+    if (refreshToken) {
+      const user = await this.userRepo.findByRefreshToken(refreshToken);
+      if (user) {
+        await this.userRepo.clearRefreshToken(user.id);
+      }
+    }
+
+    res.clearCookie(
+      appConstant.cookies.accessTokenName,
+      appConstant.cookies.accessTokenOptions,
+    );
+    res.clearCookie(
+      appConstant.cookies.refreshTokenName,
+      appConstant.cookies.refreshTokenOptions,
+    );
+  }
+
   async getMeService(req: Request, res: Response): Promise<AuthResponseUser> {
-    const id = req.user.id;
+    const id = req.user?.id;
     if (!id) throw new UnauthorizedError("Unauthorized");
     const user = await this.userRepo.findById(id);
 

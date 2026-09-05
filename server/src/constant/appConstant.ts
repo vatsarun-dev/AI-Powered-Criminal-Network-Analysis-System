@@ -10,15 +10,15 @@ const baseCookieOptions: CookieOptions = {
 
 export const appConstant = {
   cookies: {
+    accessTokenName: "accessToken",
+    refreshTokenName: "refreshToken",
     accessTokenOptions: {
       ...baseCookieOptions,
       maxAge: 15 * 60 * 1000,
-      name: "access_token",
     },
     refreshTokenOptions: {
       ...baseCookieOptions,
       maxAge: 15 * 24 * 60 * 60 * 1000,
-      name: "refresh_token",
     },
   },
 };

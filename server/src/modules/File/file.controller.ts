@@ -18,7 +18,7 @@ export default class FileController {
 
     if (!req.file) throw new NotFoundError("no file found");
 
-    const file = req.file as unknown as FileType;
+    const file = req.file as FileType;
     const result = await this.fileService.fileUploadService(file, type, caseId);
     res
       .status(StatusCodes.OK)

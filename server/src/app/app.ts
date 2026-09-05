@@ -1,8 +1,8 @@
 import express, { type Express } from "express";
-import authRoutes from "../modules/auth/auth.routes.js";
-import errorHandler from "../middlewares/error.middleware.js";
-import securityMiddleware from "../middlewares/security.middleware.js";
-import fileRoutes from "../modules/File/file.routes.js";
+import authRoutes from "../modules/auth/auth.routes.ts";
+import errorHandler from "../middlewares/error.middleware.ts";
+import securityMiddleware from "../middlewares/security.middleware.ts";
+import fileRoutes from "../modules/File/file.routes.ts";
 
 export default function createApp(): Express {
   const app = express();

@@ -1,6 +1,5 @@
 import { model, Schema, type HydratedDocument } from "mongoose";
 import bcrypt from "bcrypt";
-import { comparePassword, hashPassword } from "../utils/password.js";
 import { User } from "../types/user.js";
 
 
@@ -33,7 +32,7 @@ const userSchema = new Schema(
     },
     refreshToken: {
       type: String,
-      select: false,
+      select: true,
     },
   },
   { timestamps: true },
@@ -47,6 +46,8 @@ userSchema.pre("save", async function () {
 userSchema.methods.comparePassword = function (password: string) {
   return bcrypt.compareSync(password, this.password);
 };
+
+export type UserDocument = HydratedDocument<User>;
 
 const UserModel = model<User>("User", userSchema);
 

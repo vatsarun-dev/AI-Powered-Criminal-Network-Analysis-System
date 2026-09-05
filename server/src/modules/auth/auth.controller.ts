@@ -1,9 +1,10 @@
 import { StatusCodes } from "http-status-codes";
-import type { RequestHandler } from "express";
-import AuthService, {
+import type { Request, Response, RequestHandler } from "express";
+import AuthService from "./auth.service.js";
+import {
   type LoginUserRequest,
   type RegisterUserRequest,
-} from "./auth.service.js";
+} from "../../types/Response.js";
 import { appConstant } from "../../constant/appConstant.js";
 import { successResponse } from "../../utils/ApiResponse.js";
 
@@ -28,5 +29,20 @@ export default class AuthController {
     res
       .status(StatusCodes.OK)
       .json(successResponse("User logged in successfully", { user }));
+  }
+
+  refreshController: RequestHandler = async (req,res) => {
+    const user = await this.authService.refreshService(req, res);
+
+    res
+      .status(StatusCodes.OK)
+      .json(successResponse("access token set successfully", { user }));
+  }
+
+  getMeController: RequestHandler = async (req,res) => {
+    const user = await this.authService.getMeService(req as Request);
+    res
+      .status(StatusCodes.OK)
+      .json(successResponse("user find successfully", { user }));
   }
 }

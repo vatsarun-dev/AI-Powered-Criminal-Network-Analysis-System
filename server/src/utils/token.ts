@@ -1,18 +1,30 @@
 import jwt, { type SignOptions } from "jsonwebtoken";
 import env from "../config/env.js";
-import type { AccessTokenPayload, RefreshTokenPayload } from "../types/auth.js";
+import type { AccessTokenPayload, RefreshTokenPayload } from "../types/auth.ts";
 
 function signToken(payload: object, secret: string, expiresIn: string): string {
   const options: SignOptions = { expiresIn };
   return jwt.sign(payload, secret, options);
 }
 
-export function generateAccessToken(payload: Omit<AccessTokenPayload, "type">): string {
-  return signToken({ ...payload, type: "access" }, env.ACCESS_TOKEN_SECRET, env.ACCESS_TOKEN_EXPIRES_IN);
+export function generateAccessToken(
+  payload: Omit<AccessTokenPayload, "type">,
+): string {
+  return signToken(
+    { ...payload, type: "access" },
+    env.ACCESS_TOKEN_SECRET,
+    env.ACCESS_TOKEN_EXPIRES_IN,
+  );
 }
 
-export function generateRefreshToken(payload: Omit<RefreshTokenPayload, "type">): string {
-  return signToken({ ...payload, type: "refresh" }, env.REFRESH_TOKEN_SECRET, env.REFRESH_TOKEN_EXPIRES_IN);
+export function generateRefreshToken(
+  payload: Omit<RefreshTokenPayload, "type">,
+): string {
+  return signToken(
+    { ...payload, type: "refresh" },
+    env.REFRESH_TOKEN_SECRET,
+    env.REFRESH_TOKEN_EXPIRES_IN,
+  );
 }
 
 export function verifyAccessToken(token: string): AccessTokenPayload {

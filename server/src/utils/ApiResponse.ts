@@ -4,6 +4,11 @@ export type ApiResponseBody<T> = {
   data?: T;
 };
 
-export function successResponse<T>(message: string, data?: T): ApiResponseBody<T> {
-  return data === undefined ? { success: true, message } : { success: true, message, data };
+export function successResponse<T>(
+  message: string,
+  data?: T,
+): ApiResponseBody<T> {
+  return data === undefined
+    ? { success: true, message }
+    : { success: true, message, data };
 }

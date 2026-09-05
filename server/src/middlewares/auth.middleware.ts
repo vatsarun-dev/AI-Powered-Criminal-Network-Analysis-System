@@ -5,7 +5,9 @@ import { verifyAccessToken } from "../utils/token.js";
 
 const authMiddleware: RequestHandler = (req, res, next) => {
   try {
-    const accessToken = req.cookies[appConstant.cookies.accessTokenName] as string | undefined;
+    const accessToken = req.cookies[appConstant.cookies.accessTokenName] as
+      | string
+      | undefined;
 
     if (!accessToken) {
       throw new UnauthorizedError("Access token missing");

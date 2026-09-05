@@ -13,12 +13,23 @@ const authController = new AuthController();
 routes.post(
   "/register",
   registerValidationRule,
-  asyncHandler(authController.registerController),
+  asyncHandler(authController.registerController.bind(authController)),
 );
 routes.post(
   "/login",
   loginValidationRule,
-  asyncHandler(authController.loginController),
+  asyncHandler(authController.loginController.bind(authController)),
+);
+
+routes.post(
+  "/refresh",
+  asyncHandler(authController.refreshController.bind(authController)),
+);
+
+routes.get(
+  "/me",
+  authMiddleware,
+  asyncHandler(authController.getMeController.bind(authController)),
 );
 
 routes.get("/me", authMiddleware, (req, res) => {

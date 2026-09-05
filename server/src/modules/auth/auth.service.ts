@@ -1,6 +1,6 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import UserRepo from "../../repository/user.repo.js";
-import { appConstant } from "../../constant/appConstant.js";
+import { verifyRefreshToken } from "../../utils/token.js";
 import {
   ConflictError,
   NotFoundError,
@@ -9,35 +9,62 @@ import {
 import {
   generateAccessToken,
   generateRefreshToken,
-  verifyRefreshToken,
 } from "../../utils/token.js";
 import type { AuthUser } from "../../types/auth.js";
-
-export type RegisterUserRequest = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-export type LoginUserRequest = {
-  email: string;
-  password: string;
-};
-
-export type AuthResponseUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-};
+import type {
+  RegisterUserRequest,
+  LoginUserRequest,
+  AuthResponseUser,
+} from "../../types/Response.ts";
+import { appConstant } from "../../constant/appConstant.js";
+/**
+ * @vatsarun-dev
+ * THIS IS THE SERVICE FILE
+ */
 
 export default class AuthService {
   private readonly userRepo = new UserRepo();
 
+  /** TO GET RESPONSE IN STRUCTURED WAY */
+  private toResponseUser(user: AuthUser): AuthResponseUser {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role ?? "",
+    };
+  }
+
+  /**  TO SET THE TOKEN IN BROWSER */
+  private async issueAuthCookies(
+    user: AuthResponseUser,
+    res: Response,
+  ): Promise<void> {
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    await this.userRepo.saveRefreshToken(user.id, refreshToken);
+
+    res.cookie(
+      "accessToken",
+      accessToken,
+      appConstant.cookies.accessTokenOptions,
+    );
+    res.cookie(
+      "refreshToken",
+      refreshToken,
+      appConstant.cookies.refreshTokenOptions,
+    );
+  }
+
+  /** REGISTER USER LOGIC   */
   async register(
     input: RegisterUserRequest,
     res: Response,
   ): Promise<AuthResponseUser> {
+    if (!input.name || !input.email || !input.password)
+      throw new NotFoundError("fill all these fields");
+
     const existingUser = await this.userRepo.findByEmail(input.email);
 
     if (existingUser) {
@@ -56,13 +83,15 @@ export default class AuthService {
     input: LoginUserRequest,
     res: Response,
   ): Promise<AuthResponseUser> {
+    if (!input.email || !input.password)
+      throw new NotFoundError("fill all these fields");
     const user = await this.userRepo.findByEmail(input.email);
 
     if (!user) {
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    const passwordMatches = await user.comparePassword(input.password);
+    const passwordMatches = await (user as any).comparePassword(input.password);
 
     if (!passwordMatches) {
       throw new UnauthorizedError("Invalid email or password");
@@ -73,36 +102,37 @@ export default class AuthService {
 
     return responseUser;
   }
-  
-  private toResponseUser(user: any): AuthResponseUser {
-    return {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+
+  async refreshService(req: Request, res: Response) {
+    const refreshToken = req.cookies[appConstant.cookies.refreshTokenOptions.name];
+    if (!refreshToken) {
+      throw new UnauthorizedError("Refresh token missing");
+    }
+
+    const decoded = verifyRefreshToken(refreshToken);
+    const user = await this.userRepo.findByEmail(decoded.email);
+    if (!user) {
+      throw new UnauthorizedError("User not found");
+    }
+
+
+    const responseUser = this.toResponseUser(user);
+    await this.issueAuthCookies(responseUser, res);
+
+    return responseUser;
   }
-  
 
-private async issueAuthCookies(user: AuthResponseUser, res: Response) {
-  const payload = { id: user.id, email: user.email, role: user.role };
+  async getMeService(req: Request) {
+    const userPayload = req.user;
+    if (!userPayload) {
+      throw new UnauthorizedError("Not authenticated");
+    }
 
-  const accessToken = generateAccessToken(payload);
-  const refreshToken = generateRefreshToken(payload);
+    const user = await this.userRepo.findByEmail(userPayload.email);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
 
-  res.cookie(appConstant.cookies.refreshTokenName, refreshToken, {
-    httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "true",
-    sameSite: "strict",
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-  });
-
-  res.cookie(appConstant.cookies.accessTokenName, accessToken, {
-    httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "true",
-    sameSite: "strict",
-    maxAge: 15 * 60 * 1000,
-  });
-}
-   
+    return this.toResponseUser(user);
+  }
 }

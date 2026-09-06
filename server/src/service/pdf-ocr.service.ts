@@ -1,6 +1,8 @@
 import { convertPdfToImages } from "./pdf.service.ts";
 import { extractTextFromImage } from "./ocr.service.ts";
 import { OCRResult } from "../models/ocr-result.model.ts";
+import { extractNamedEntities } from "./ner.service.ts";
+import { saveEntities } from "../modules/entity/entity.service.ts";
 
 export const extractTextFromPdf = async (
   pdfPath: string,
@@ -27,8 +29,14 @@ export const extractTextFromPdf = async (
       confidence: ocrResult.confidence,
     });
 
+    const entities = await extractNamedEntities(ocrResult.text);
+
+    await saveEntities({
+      entities,
+      sourceDocumentId,
+      pageNumber: i + 1,
+    });
+
     results.push(savedResult);
   }
-
-  return results;
 };

@@ -1,10 +1,12 @@
 import UserModel, { type UserDocument } from "../models/user.model.js";
 import { hashRefreshToken } from "../utils/token.js";
+import type { Role } from "../types/auth.js";
 
 export type CreateUserInput = {
   name: string;
   email: string;
   password: string;
+  role: Role;
 };
 
 export default class UserRepo {

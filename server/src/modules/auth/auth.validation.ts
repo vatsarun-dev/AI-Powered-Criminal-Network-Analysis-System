@@ -21,6 +21,11 @@ export const registerValidationRule = [
 
   body("designation").trim().optional(),
 
+  body("role")
+    .optional()
+    .isIn(["user", "admin"])
+    .withMessage("Role must be user or admin"),
+
   body("password")
     .notEmpty()
     .withMessage("password required")

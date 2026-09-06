@@ -3,6 +3,7 @@ import LoginForm from "../features/auth/components/LoginForm";
 import RegisterForm from "../features/auth/components/RegisterForm";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import DashboardShell from "../components/layout/DashboardShell";
+import FileUpload from "../features/upload/components/FileUpload";
 
 // Placeholders — replace each with the real feature page as it's built
 function DashboardHome() {
@@ -46,6 +47,7 @@ export default function AppRoutes() {
       <Route path="/map" element={<ShellRoute><MapPage /></ShellRoute>} />
       <Route path="/alerts" element={<ShellRoute><AlertsPage /></ShellRoute>} />
       <Route path="/dossier" element={<ShellRoute><DossierPage /></ShellRoute>} />
+      <Route path="/upload" element={<ShellRoute><FileUpload /></ShellRoute>} />
     </Routes>
   );
 }

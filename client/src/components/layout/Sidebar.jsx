@@ -7,6 +7,7 @@ const links = [
   { to: "/map", label: "Map" },
   { to: "/alerts", label: "Alerts" },
   { to: "/dossier", label: "Dossier Export" },
+  { to: "/upload", label: "File Upload" },
 ];
 
 export default function Sidebar() {

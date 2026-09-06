@@ -136,7 +136,8 @@
   font-weight: 600;
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
 
   padding: 13px 14px;
@@ -162,11 +163,13 @@
   color: #9ca3af;
 }
 
-.form-field input:hover {
+.form-field input:hover,
+.form-field select:hover {
   border-color: #9ca3af;
 }
 
-.form-field input:focus {
+.form-field input:focus,
+.form-field select:focus {
   border-color: #2563eb;
 
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);

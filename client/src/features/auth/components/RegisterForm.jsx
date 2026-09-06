@@ -8,6 +8,7 @@ export default function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,13 +21,14 @@ export default function RegisterForm() {
     setLoading(true);
 
     try {
-      const { user, token } = await registerUser({
+      const { user } = await registerUser({
         name,
         email,
         password,
+        role,
       });
 
-      login(user, token);
+      login(user);
       navigate("/dashboard");
     } catch (err) {
       setError(
@@ -94,6 +96,20 @@ export default function RegisterForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="role">Role</label>
+
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           <button

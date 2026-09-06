@@ -19,9 +19,9 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const { user, token } = await loginUser({ email, password });
+      const { user } = await loginUser({ email, password });
 
-      login(user, token);
+      login(user);
       navigate("/dashboard");
     } catch (err) {
       setError(

@@ -1,0 +1,48 @@
+.file-upload {
+  max-width: 480px;
+}
+
+.file-drop-zone {
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  color: #555;
+  transition: border-color 0.2s;
+}
+
+.file-drop-zone:hover {
+  border-color: #6c63ff;
+}
+
+.upload-progress {
+  position: relative;
+  background: #eee;
+  border-radius: 6px;
+  height: 20px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.upload-progress-bar {
+  background: #6c63ff;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.upload-progress span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  line-height: 20px;
+  color: #333;
+}
+
+.file-upload-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}

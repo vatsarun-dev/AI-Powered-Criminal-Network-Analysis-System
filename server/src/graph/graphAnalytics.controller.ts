@@ -52,14 +52,14 @@ export const louvainCommunities = async (
     const results = await getLouvainCommunities();
 
     return res.status(200).json({
-      message: "Louvain communities detected successfully",
+      message: "Louvain communities calculated successfully",
       results,
     });
   } catch (error) {
     console.error("Louvain community detection error:", error);
 
     return res.status(500).json({
-      message: "Failed to detect communities",
+      message: "Failed to calculate Louvain communities",
     });
   }
 };

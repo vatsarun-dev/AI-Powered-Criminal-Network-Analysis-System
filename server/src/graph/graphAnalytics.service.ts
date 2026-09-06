@@ -80,41 +80,55 @@ export const getLouvainCommunities = async () => {
   });
 
   try {
-    const query = `
-      MATCH (source)
-      OPTIONAL MATCH (source)-[r]-(target)
+    // Remove existing graph if it is already present
+    await session.run(`
+      CALL gds.graph.drop('criminal-network', false)
+      YIELD graphName
+      RETURN graphName
+    `);
 
-      RETURN gds.graph.project(
+    // Create a fresh graph projection
+    const projectQuery = `
+      CALL gds.graph.project(
         'criminal-network',
-        source,
-        target,
+        '*',
+        '*',
         {
-          sourceNodeProperties: source { .id },
-          targetNodeProperties: target { .id },
-          relationshipType: type(r)
-        },
-        {
-          memory: '2GB'
+          memory: '2GB',
+          ttl: 'PT30M'
         }
       )
+      YIELD graphName, nodeCount, relationshipCount
+
+      RETURN graphName, nodeCount, relationshipCount
     `;
 
-    await session.run(query);
+    await session.run(projectQuery);
 
-    const result = await session.run(`
+    // Run Louvain
+    const louvainQuery = `
       CALL gds.louvain.stream('criminal-network')
       YIELD nodeId, communityId
 
-      RETURN
-        nodeId,
-        communityId
+      RETURN nodeId, communityId
       ORDER BY communityId
-    `);
+    `;
 
-    return result.records.map((record) => ({
+    const result = await session.run(louvainQuery);
+
+    const results = result.records.map((record) => ({
       nodeId: record.get("nodeId").toNumber(),
       communityId: record.get("communityId").toNumber(),
     }));
+
+    // Cleanup graph after algorithm finishes
+    await session.run(`
+      CALL gds.graph.drop('criminal-network', false)
+      YIELD graphName
+      RETURN graphName
+    `);
+
+    return results;
   } finally {
     await session.close();
   }

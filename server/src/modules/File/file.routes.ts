@@ -15,4 +15,11 @@ routes.post(
   upload.single("file"),
   asyncHandler(fileController.fileUploadController.bind(fileController)),
 );
+
+routes.get(
+  "/file/search",
+  authMiddleware,
+  asyncHandler(fileController.searchFilesController.bind(fileController)),
+);
+
 export default routes;

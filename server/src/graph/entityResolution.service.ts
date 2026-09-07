@@ -1,9 +1,6 @@
 import * as fuzzball from "fuzzball";
 
-import {
-  neo4jDriver,
-  neo4jDatabase,
-} from "../config/neo4j.js";
+import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
 
 export const findPersonByPhone = async (phone: string) => {
   const session = neo4jDriver.session({
@@ -83,7 +80,7 @@ export const findPersonByName = async (name: string) => {
 
       const score = fuzzball.ratio(
         name.toLowerCase(),
-        String(person.name).toLowerCase()
+        String(person.name).toLowerCase(),
       );
 
       if (!bestMatch || score > bestMatch.score) {
@@ -98,14 +95,14 @@ export const findPersonByName = async (name: string) => {
       return null;
     }
 
-  if (bestMatch.score < 80) {
-  return null;
-}
+    if (bestMatch.score < 80) {
+      return null;
+    }
 
-return {
-  person: bestMatch.person,
-  score: bestMatch.score,
-};
+    return {
+      person: bestMatch.person,
+      score: bestMatch.score,
+    };
   } finally {
     await session.close();
   }
@@ -114,7 +111,7 @@ export const findSupportingSignal = async (
   personId: string,
   phone?: string,
   deviceId?: string,
-  locationId?: string
+  locationId?: string,
 ) => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,

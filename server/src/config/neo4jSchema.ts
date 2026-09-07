@@ -42,6 +42,12 @@ const constraints = [
   FOR (e:EVENT)
   REQUIRE e.id IS UNIQUE
   `,
+
+  `
+  CREATE CONSTRAINT organization_id_unique IF NOT EXISTS
+  FOR (o:ORGANIZATION)
+  REQUIRE o.id IS UNIQUE
+  `,
 ];
 
 export const initializeNeo4jSchema = async () => {

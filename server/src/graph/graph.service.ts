@@ -1,16 +1,10 @@
-import {
-  neo4jDriver,
-  neo4jDatabase,
-} from "../config/neo4j.js";
+import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
 
-import type {
-  NodeLabel,
-  RelationshipType,
-} from "./graph.constants.js";
+import type { NodeLabel, RelationshipType } from "./graph.constants.js";
 
 export const createNode = async (
   label: NodeLabel,
-  properties: Record<string, unknown>
+  properties: Record<string, unknown>,
 ) => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,
@@ -40,7 +34,7 @@ export const createRelationship = async (
   relationship: RelationshipType,
   toLabel: NodeLabel,
   toId: string,
-  properties: Record<string, unknown> = {}
+  properties: Record<string, unknown> = {},
 ) => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,

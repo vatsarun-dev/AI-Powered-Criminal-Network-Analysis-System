@@ -23,14 +23,8 @@ router.post("/resolve", resolvePerson);
 
 router.get("/analytics/centrality", degreeCentrality);
 
-router.get(
-  "/analytics/betweenness",
-  betweennessCentrality
-);
+router.get("/analytics/betweenness", betweennessCentrality);
 
-router.get(
-  "/analytics/communities",
-  louvainCommunities
-);
+router.get("/analytics/communities", louvainCommunities);
 
 export default router;

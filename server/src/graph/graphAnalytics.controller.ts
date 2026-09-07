@@ -6,10 +6,7 @@ import {
   getLouvainCommunities,
 } from "./graphAnalytics.service.js";
 
-export const degreeCentrality = async (
-  _req: Request,
-  res: Response
-) => {
+export const degreeCentrality = async (_req: Request, res: Response) => {
   try {
     const results = await getDegreeCentrality();
 
@@ -25,10 +22,7 @@ export const degreeCentrality = async (
     });
   }
 };
-export const betweennessCentrality = async (
-  _req: Request,
-  res: Response
-) => {
+export const betweennessCentrality = async (_req: Request, res: Response) => {
   try {
     const results = await getBetweennessCentrality();
 
@@ -44,10 +38,7 @@ export const betweennessCentrality = async (
     });
   }
 };
-export const louvainCommunities = async (
-  _req: Request,
-  res: Response
-) => {
+export const louvainCommunities = async (_req: Request, res: Response) => {
   try {
     const results = await getLouvainCommunities();
 

@@ -1,5 +1,9 @@
 import { pipeline } from "@huggingface/transformers";
-import { applyEntityContextRules } from "./ner-context.service.ts";
+import {
+  isOCRFieldLabel,
+  removeOCRFieldLabelPrefix,
+} from "./ocr-cleanup.service.js";
+import { applyEntityContextRules } from "./ner-context.service.js";
 
 type EntityType = "PERSON" | "LOCATION" | "ORGANIZATION";
 
@@ -26,6 +30,23 @@ const ENTITY_MAP: Record<string, EntityType> = {
 };
 
 let nerPipeline: any = null;
+
+const MIN_ENTITY_CONFIDENCE = 0.65;
+
+const LOWERCASE_CONNECTOR_TOKENS = new Set([
+  "of",
+  "the",
+  "and",
+  "in",
+  "at",
+  "on",
+  "de",
+  "la",
+  "di",
+  "da",
+  "bin",
+  "ibn",
+]);
 
 const getNERPipeline = async () => {
   if (!nerPipeline) {
@@ -90,6 +111,14 @@ const mergeSubwords = (entities: RawEntity[]): RawEntity[] => {
       continue;
     }
 
+    /*
+     * An orphaned WordPiece has no reliable beginning to reconstruct.
+     * Keeping it would persist a truncated value such as "ress Civil Lines".
+     */
+    if (entity.word.startsWith("##")) {
+      continue;
+    }
+
     merged.push({
       ...entity,
     });
@@ -100,6 +129,47 @@ const mergeSubwords = (entities: RawEntity[]): RawEntity[] => {
 
 const cleanValue = (value: string): string => {
   return value.replace(/##/g, "").replace(/\s+/g, " ").trim();
+};
+
+const isWordCharacter = (character: string | undefined): boolean => {
+  return Boolean(character && /[\p{L}\p{N}]/u.test(character));
+};
+
+const completePartialWord = (
+  line: string,
+  value: string,
+  offset: number,
+): string => {
+  let start = offset;
+  let end = offset + value.length;
+
+  if (!isWordCharacter(value[0]) || !isWordCharacter(value.at(-1))) {
+    return value;
+  }
+
+  while (start > 0 && isWordCharacter(line[start - 1])) {
+    start--;
+  }
+
+  while (end < line.length && isWordCharacter(line[end])) {
+    end++;
+  }
+
+  return line.slice(start, end);
+};
+
+const hasUnexpectedShortLowercaseToken = (value: string): boolean => {
+  const tokens = value.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+
+  return (
+    tokens.length > 1 &&
+    tokens.some(
+      (token) =>
+        token.length <= 2 &&
+        token === token.toLowerCase() &&
+        !LOWERCASE_CONNECTOR_TOKENS.has(token),
+    )
+  );
 };
 
 export const extractNamedEntities = async (
@@ -157,9 +227,9 @@ export const extractNamedEntities = async (
         continue;
       }
 
-      const value = cleanValue(entity.word);
+      let value = cleanValue(entity.word);
 
-      if (!value) {
+      if (!value || entity.score < MIN_ENTITY_CONFIDENCE) {
         continue;
       }
 
@@ -170,6 +240,7 @@ export const extractNamedEntities = async (
        */
       if (typeof entity.start === "number") {
         charOffset = lineOffset + entity.start;
+        value = completePartialWord(trimmedLine, value, entity.start);
       } else {
         /**
          * Fallback: find the entity inside the original line.
@@ -178,9 +249,24 @@ export const extractNamedEntities = async (
           .toLowerCase()
           .indexOf(value.toLowerCase());
 
-        if (localOffset !== -1) {
-          charOffset = lineOffset + localOffset;
+        if (localOffset === -1) {
+          continue;
         }
+
+        charOffset = lineOffset + localOffset;
+        value = completePartialWord(trimmedLine, value, localOffset);
+      }
+
+      const valueWithoutFieldLabel = removeOCRFieldLabelPrefix(value);
+      charOffset += value.length - valueWithoutFieldLabel.length;
+      value = valueWithoutFieldLabel;
+
+      if (
+        !value ||
+        isOCRFieldLabel(value) ||
+        hasUnexpectedShortLowercaseToken(value)
+      ) {
+        continue;
       }
 
       finalEntities.push({

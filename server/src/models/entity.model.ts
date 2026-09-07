@@ -9,10 +9,18 @@ const entitySchema = new Schema(
       index: true,
     },
 
+    // Original value extracted from OCR/NER
     value: {
       type: String,
       required: true,
       trim: true,
+    },
+
+    // Cleaned value used for searching/resolution
+    normalizedValue: {
+      type: String,
+      required: true,
+      index: true,
     },
 
     confidence: {
@@ -49,6 +57,11 @@ const entitySchema = new Schema(
 entitySchema.index({
   sourceDocumentId: 1,
   pageNumber: 1,
+});
+
+entitySchema.index({
+  entityType: 1,
+  normalizedValue: 1,
 });
 
 export const EntityModel = model("Entity", entitySchema);

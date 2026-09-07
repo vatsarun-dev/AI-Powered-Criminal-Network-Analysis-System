@@ -7,10 +7,7 @@ import {
   findSupportingSignal,
 } from "./entityResolution.service.js";
 
-export const resolvePerson = async (
-  req: Request,
-  res: Response
-) => {
+export const resolvePerson = async (req: Request, res: Response) => {
   try {
     const { phone, personId, name } = req.body;
 
@@ -60,7 +57,7 @@ export const resolvePerson = async (
           String(result.person.id),
           phone,
           deviceId,
-          locationId
+          locationId,
         );
 
         if (hasSupportingSignal) {
@@ -78,8 +75,7 @@ export const resolvePerson = async (
           matchType: "fuzzy_name_candidate",
           confidence,
           score: result.score,
-          message:
-            "Similar name found, but no supporting signal was provided",
+          message: "Similar name found, but no supporting signal was provided",
           candidate: result.person,
         });
       }

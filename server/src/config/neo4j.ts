@@ -1,5 +1,5 @@
 import neo4j from "neo4j-driver";
-import env from "./env.ts";
+import env from "./env.js";
 const uri = env.NEO4J_URI;
 const username = env.NEO4J_USERNAME;
 const password = env.NEO4J_PASSWORD;

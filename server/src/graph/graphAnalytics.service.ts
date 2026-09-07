@@ -1,7 +1,4 @@
-import {
-  neo4jDriver,
-  neo4jDatabase,
-} from "../config/neo4j.js";
+import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
 
 export const getDegreeCentrality = async () => {
   const session = neo4jDriver.session({

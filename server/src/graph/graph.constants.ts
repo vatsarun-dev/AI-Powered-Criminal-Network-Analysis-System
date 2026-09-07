@@ -4,6 +4,7 @@ export const NODE_LABELS = [
   "DEVICE",
   "ACCOUNT",
   "LOCATION",
+  "ORGANIZATION",
   "CASE",
   "EVENT",
 ] as const;
@@ -23,5 +24,4 @@ export const RELATIONSHIP_TYPES = [
   "RELATED_TO",
 ] as const;
 
-export type RelationshipType =
-  (typeof RELATIONSHIP_TYPES)[number];
+export type RelationshipType = (typeof RELATIONSHIP_TYPES)[number];

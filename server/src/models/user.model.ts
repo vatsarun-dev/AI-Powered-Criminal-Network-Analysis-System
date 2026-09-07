@@ -1,6 +1,6 @@
 import { model, Schema, type HydratedDocument } from "mongoose";
 import bcrypt from "bcrypt";
-import type { User } from "../types/user.ts";
+import type { User } from "../types/user.js";
 
 const userSchema = new Schema(
   {

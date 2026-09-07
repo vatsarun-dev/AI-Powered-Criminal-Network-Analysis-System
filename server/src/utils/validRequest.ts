@@ -12,9 +12,9 @@ export default function validRequest(
     return next();
   }
 
-  const validationErrors = errors.array().map(({ path, msg }) => ({
-    field: path,
-    msg,
+  const validationErrors = errors.array().map((error) => ({
+    field: error.type === "field" ? error.path : "request",
+    msg: error.msg,
   }));
 
   return res.status(422).json({

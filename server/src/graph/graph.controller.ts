@@ -1,19 +1,10 @@
 import type { Request, Response } from "express";
 
-import {
-  NODE_LABELS,
-  RELATIONSHIP_TYPES,
-} from "./graph.constants.js";
+import { NODE_LABELS, RELATIONSHIP_TYPES } from "./graph.constants.js";
 
-import {
-  createNode,
-  createRelationship,
-} from "./graph.service.js";
+import { createNode, createRelationship } from "./graph.service.js";
 
-export const createGraphNode = async (
-  req: Request,
-  res: Response
-) => {
+export const createGraphNode = async (req: Request, res: Response) => {
   try {
     const { label, properties } = req.body;
 
@@ -44,17 +35,9 @@ export const createGraphNode = async (
   }
 };
 
-export const createGraphRelationship = async (
-  req: Request,
-  res: Response
-) => {
+export const createGraphRelationship = async (req: Request, res: Response) => {
   try {
-    const {
-      from,
-      relationship,
-      to,
-      properties,
-    } = req.body;
+    const { from, relationship, to, properties } = req.body;
 
     if (!NODE_LABELS.includes(from?.label)) {
       return res.status(400).json({
@@ -80,7 +63,7 @@ export const createGraphRelationship = async (
       relationship,
       to.label,
       to.id,
-      properties
+      properties,
     );
 
     return res.status(201).json({

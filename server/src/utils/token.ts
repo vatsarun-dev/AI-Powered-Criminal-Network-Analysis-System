@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import env from "../config/env.js";
-import type { AccessTokenPayload, RefreshTokenPayload } from "../types/auth.ts";
+import type { AccessTokenPayload, RefreshTokenPayload } from "../types/auth.js";
 
 function signToken(
   payload: object,

@@ -1,8 +1,9 @@
-import { convertPdfToImages } from "./pdf.service.ts";
-import { extractTextFromImage } from "./ocr.service.ts";
-import { OCRResult } from "../models/ocr-result.model.ts";
-import { extractNamedEntities } from "./ner.service.ts";
-import { saveEntities } from "../modules/entity/entity.service.ts";
+import { convertPdfToImages } from "./pdf.service.js";
+import { extractTextFromImage } from "./ocr.service.js";
+import { OCRResult } from "../models/ocr-result.model.js";
+import { extractNamedEntities } from "./ner.service.js";
+import { saveEntities } from "../modules/entity/entity.service.js";
+import { cleanOCRText } from "./ocr-cleanup.service.js";
 
 export const extractTextFromPdf = async (
   pdfPath: string,
@@ -17,10 +18,13 @@ export const extractTextFromPdf = async (
 
   const results = [];
 
-  for (let i = 0; i < imagePaths.length; i++) {
-    const imagePath = imagePaths[i];
+  for (const [i, imagePath] of imagePaths.entries()) {
 
     const ocrResult = await extractTextFromImage(imagePath);
+
+    const cleanedText = cleanOCRText(ocrResult.text);
+
+    const entities = await extractNamedEntities(cleanedText);
 
     const savedResult = await OCRResult.create({
       sourceDocumentId,
@@ -28,8 +32,6 @@ export const extractTextFromPdf = async (
       text: ocrResult.text,
       confidence: ocrResult.confidence,
     });
-
-    const entities = await extractNamedEntities(ocrResult.text);
 
     await saveEntities({
       entities,

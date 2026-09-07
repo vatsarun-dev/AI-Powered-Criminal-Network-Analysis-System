@@ -1,4 +1,4 @@
-import { createWorker } from "tesseract.js";
+import Tesseract from "tesseract.js";
 
 export const extractTextFromImage = async (
   imagePath: string,
@@ -6,10 +6,10 @@ export const extractTextFromImage = async (
   text: string;
   confidence: number;
 }> => {
-  const worker = await createWorker("eng");
+  const worker = await Tesseract.createWorker("eng");
 
   await worker.setParameters({
-    tessedit_pageseg_mode: "3",
+    tessedit_pageseg_mode: Tesseract.PSM.AUTO,
   });
 
   const result = await worker.recognize(imagePath);

@@ -10,12 +10,12 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../../utils/token.js";
-import type { AuthUser } from "../../types/auth.ts";
+import type { AuthUser } from "../../types/auth.js";
 import type {
   RegisterUserRequest,
   LoginUserRequest,
   AuthResponseUser,
-} from "../../types/Response.ts";
+} from "../../types/Response.js";
 import { appConstant } from "../../constant/appConstant.js";
 /**
  * @vatsarun-dev

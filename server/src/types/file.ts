@@ -11,6 +11,7 @@ export type File = {
   size: number;
   type: string;
   caseId: string;
+  location?: string;
   storagePath: string;
   status: string;
 };

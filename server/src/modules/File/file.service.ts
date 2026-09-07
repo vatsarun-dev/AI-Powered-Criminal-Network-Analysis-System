@@ -3,7 +3,7 @@ import path from "node:path";
 import { FileType, File } from "../../types/file.js";
 import { FileModel } from "../../models/file.model.js";
 import { FileResponse } from "../../types/Response.js";
-import { extractTextFromPdf } from "../../service/pdf-ocr.service.ts";
+import { extractTextFromPdf } from "../../service/pdf-ocr.service.js";
 
 interface FileReturnType {
   file: Express.Multer.File;
@@ -13,20 +13,21 @@ interface FileReturnType {
 
 export default class FileService {
   private response(uploadedFile: File): FileResponse {
-    return {
-      fileId: (uploadedFile as File & { _id: string })._id,
-      originalName: uploadedFile.originalName,
-      type: uploadedFile.type,
-      size: String(uploadedFile.size),
-      status: uploadedFile.status,
-    };
-  }
+  return {
+    fileId: (uploadedFile as File & { _id: string })._id,
+    originalName: uploadedFile.originalName,
+    type: uploadedFile.type,
+    size: String(uploadedFile.size),
+    status: uploadedFile.status,
+    ...(uploadedFile.location ? { location: uploadedFile.location } : {}),
+  };
+}
 
   async fileUploadService(
-    file: FileType,
-    type: string,
-    caseId: string,
-  ): Promise<FileResponse> {
+  file: Express.Multer.File,
+  type: string,
+  caseId: string,
+): Promise<FileResponse> {
     if (!file || !type || !caseId) {
       throw new Error("all fields are required");
     }
@@ -35,7 +36,7 @@ export default class FileService {
       originalName: file.originalname,
       storedName: file.filename,
       mimeType: file.mimetype,
-      size: Number((file as FileType & { size?: number }).size ?? 0),
+      size: Number(file.size ?? 0),
       type,
       caseId,
       storagePath: file.path,
@@ -78,5 +79,43 @@ export default class FileService {
     }
 
     return this.response(updatedFile);
+  }
+
+  /**
+   * Search / filter files by name, date, location, and/or case.
+   * All filters are optional — only the provided ones are applied.
+   */
+  async searchFilesService(filters: {
+    name?: string;
+    date?: string;
+    location?: string;
+    caseId?: string;
+  }): Promise<FileResponse[]> {
+    const query: Record<string, unknown> = {};
+
+    if (filters.name) {
+      query.originalName = { $regex: filters.name, $options: "i" };
+    }
+
+    if (filters.location) {
+      query.location = { $regex: filters.location, $options: "i" };
+    }
+
+    if (filters.caseId) {
+      query.caseId = filters.caseId;
+    }
+
+    if (filters.date) {
+      const startOfDay = new Date(filters.date);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(filters.date);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      query.createdAt = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    const files = await FileModel.find(query);
+    return files.map((file) => this.response(file));
   }
 }

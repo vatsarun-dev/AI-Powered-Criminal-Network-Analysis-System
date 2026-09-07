@@ -33,6 +33,11 @@ const fileSchema = new Schema(
       required: true,
     },
 
+    location: {
+      type: String,
+      required: false,
+    },
+
     storagePath: {
       type: String,
       required: true,

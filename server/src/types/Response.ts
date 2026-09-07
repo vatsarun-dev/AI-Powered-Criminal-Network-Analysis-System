@@ -25,4 +25,5 @@ export type FileResponse = {
   type: string;
   size: string;
   status: string;
+  location?: string;
 };

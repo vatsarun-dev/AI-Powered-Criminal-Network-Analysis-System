@@ -6,6 +6,11 @@ import {
 } from "./graph.controller.js";
 
 import { resolvePerson } from "./entityResolution.controller.js";
+import {
+  searchNodes,
+  nodeConnections,
+  shortestPath,
+} from "./graphQuery.controller.js";
 
 import {
   degreeCentrality,
@@ -26,5 +31,10 @@ router.get("/analytics/centrality", degreeCentrality);
 router.get("/analytics/betweenness", betweennessCentrality);
 
 router.get("/analytics/communities", louvainCommunities);
+router.get("/search", searchNodes);
+
+router.get("/connections/:id", nodeConnections);
+
+router.get("/shortest-path", shortestPath);
 
 export default router;

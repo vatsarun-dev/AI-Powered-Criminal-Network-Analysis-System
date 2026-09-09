@@ -6,10 +6,46 @@ import {
 } from "../shared/error/globalError.js";
 
 import {
+  getCaseNetwork,
+  getGraphNeighbors,
+  getGraphNode,
+  getGraphRelationships,
   searchGraphNodes,
   getNodeConnections,
+  getPersonNetwork,
   getShortestPath,
 } from "./graphQuery.service.js";
+import { NODE_LABELS, RELATIONSHIP_TYPES } from "./graph.constants.js";
+
+const readCsvQuery = (value: unknown): string[] =>
+  typeof value === "string"
+    ? [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))]
+    : [];
+
+const readBoundedNumber = (
+  value: unknown,
+  defaultValue: number,
+  minimum: number,
+  maximum: number,
+): number => {
+  if (value === undefined) return defaultValue;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < minimum || parsed > maximum) {
+    throw new BadRequestError(
+      `Value must be an integer between ${minimum} and ${maximum}`,
+    );
+  }
+
+  return parsed;
+};
+
+const requireNodeId = (value: unknown): string => {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new BadRequestError("Node id is required");
+  }
+
+  return value.trim();
+};
 
 export const searchNodes = async (
   req: Request,
@@ -84,5 +120,125 @@ export const shortestPath = async (
     success: true,
     message: "Shortest path calculated successfully",
     data: result,
+  });
+};
+
+export const getNode = async (req: Request, res: Response) => {
+  const node = await getGraphNode(requireNodeId(req.params.id));
+  if (!node) {
+    throw new NotFoundError("Graph node not found");
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Graph node fetched successfully",
+    data: node,
+  });
+};
+
+export const getNeighbors = async (req: Request, res: Response) => {
+  try {
+    const result = await getGraphNeighbors(requireNodeId(req.params.id));
+    return res.status(200).json({
+      success: true,
+      message: "Graph neighbors fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "GRAPH_NODE_NOT_FOUND") {
+      throw new NotFoundError("Graph node not found");
+    }
+
+    throw error;
+  }
+};
+
+export const listRelationships = async (req: Request, res: Response) => {
+  const nodeLabels = readCsvQuery(req.query.labels);
+  const relationshipTypes = readCsvQuery(req.query.relationshipTypes);
+  const invalidLabels = nodeLabels.filter(
+    (label) => !NODE_LABELS.includes(label as (typeof NODE_LABELS)[number]),
+  );
+  const invalidRelationshipTypes = relationshipTypes.filter(
+    (type) =>
+      !RELATIONSHIP_TYPES.includes(
+        type as (typeof RELATIONSHIP_TYPES)[number],
+      ),
+  );
+
+  if (invalidLabels.length) {
+    throw new BadRequestError(`Invalid node labels: ${invalidLabels.join(", ")}`);
+  }
+  if (invalidRelationshipTypes.length) {
+    throw new BadRequestError(
+      `Invalid relationship types: ${invalidRelationshipTypes.join(", ")}`,
+    );
+  }
+
+  const nodeId =
+    typeof req.query.nodeId === "string" && req.query.nodeId.trim()
+      ? req.query.nodeId.trim()
+      : undefined;
+  const sourceDocumentId =
+    typeof req.query.sourceDocumentId === "string" &&
+    req.query.sourceDocumentId.trim()
+      ? req.query.sourceDocumentId.trim()
+      : undefined;
+  const data = await getGraphRelationships({
+    ...(nodeId ? { nodeId } : {}),
+    ...(nodeLabels.length
+      ? { nodeLabels: nodeLabels as (typeof NODE_LABELS)[number][] }
+      : {}),
+    ...(relationshipTypes.length
+      ? {
+          relationshipTypes: relationshipTypes as (typeof RELATIONSHIP_TYPES)[number][],
+        }
+      : {}),
+    ...(sourceDocumentId ? { sourceDocumentId } : {}),
+    limit: readBoundedNumber(req.query.limit, 100, 1, 500),
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Graph relationships fetched successfully",
+    data,
+  });
+};
+
+/**
+ * Frontend-oriented alias: the response is a complete `{ nodes,
+ * relationships }` subgraph, constrained by the same safe filters.
+ */
+export const filteredGraph = listRelationships;
+
+export const caseNetwork = async (req: Request, res: Response) => {
+  const data = await getCaseNetwork(
+    requireNodeId(req.params.id),
+    readBoundedNumber(req.query.depth, 2, 1, 3),
+  );
+  if (!data) {
+    throw new NotFoundError("Case graph node not found");
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Case network fetched successfully",
+    data,
+  });
+};
+
+export const personNetwork = async (req: Request, res: Response) => {
+  const data = await getPersonNetwork(
+    requireNodeId(req.params.id),
+    readBoundedNumber(req.query.depth, 2, 1, 3),
+  );
+  if (!data) {
+    throw new NotFoundError("Person graph node not found");
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Person network fetched successfully",
+    data,
   });
 };

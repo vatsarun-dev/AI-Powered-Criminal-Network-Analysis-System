@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type { EntityType } from "../types/entity.js";
 import { RelationshipEvidenceModel } from "../models/relationship-evidence.model.js";
 import { getEntityNodeLabel } from "./entity-node-labels.js";
+import { getGraphProjectionForEntity } from "./entity-graph-projection.service.js";
 import type { NodeLabel, RelationshipType } from "./graph.constants.js";
 import { createRelationship } from "./graph.service.js";
 
@@ -367,14 +368,23 @@ export const persistExtractedRelationships = async (
       { upsert: true },
     );
 
+    const [fromProjection, toProjection] = await Promise.all([
+      getGraphProjectionForEntity(relationship.fromEntityId),
+      getGraphProjectionForEntity(relationship.toEntityId),
+    ]);
+
     await createRelationship(
-      relationship.fromLabel,
-      relationship.fromEntityId,
+      fromProjection.nodeLabel,
+      fromProjection.graphNodeId,
       relationship.relationshipType,
-      relationship.toLabel,
-      relationship.toEntityId,
+      toProjection.nodeLabel,
+      toProjection.graphNodeId,
       {
         evidenceId: relationship.evidenceId,
+        fromEntityId: relationship.fromEntityId,
+        toEntityId: relationship.toEntityId,
+        fromGraphNodeId: fromProjection.graphNodeId,
+        toGraphNodeId: toProjection.graphNodeId,
         sourceDocumentId: relationship.sourceDocumentId,
         pageNumber: relationship.pageNumber,
         confidence: relationship.confidence,

@@ -89,6 +89,29 @@ test("extracts fictional FIR, vehicle, and phone domain entities", () => {
   assert.deepEqual(fir?.originalValues, ["FIR No. 123/2026", "123/2026"]);
 });
 
+test("extracts typed relationship endpoints without matching ordinary prose", () => {
+  const text =
+    "Vikram was accused in Case 123 at Vidyanagar Police Station. " +
+    "IMEI No: IMEI123456789012. Account Number: ACCT100001. " +
+    "Case 123 is heard in District Court. Crime Category: Theft.";
+  const entities = extractDomainEntities(text);
+
+  assert.deepEqual(
+    entities.map((entity) => [entity.entity_type, entity.value]),
+    [
+      ["CASE", "Case 123"],
+      ["CASE", "Case 123"],
+      ["DEVICE", "IMEI123456789012"],
+      ["ACCOUNT", "ACCT100001"],
+      ["POLICE_STATION", "Vidyanagar Police Station"],
+      ["COURT", "District Court"],
+      ["CRIME_CATEGORY", "Theft"],
+    ],
+  );
+  assert.equal(normalizeEntityValue("imei-123 456", "DEVICE"), "IMEI123456");
+  assert.equal(normalizeEntityValue("acct 100-001", "ACCOUNT"), "ACCT100001");
+});
+
 test("merges overlapping NER and regex detections while retaining both sources", () => {
   const entities = deduplicateExtractedEntities([
     {

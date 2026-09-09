@@ -171,6 +171,23 @@ summaries. A similar or phonetically equivalent name alone always returns
 }
 ```
 
+## Relationship Extraction (Phase 3)
+
+FIR-page ingestion now runs relationship extraction after entities are
+persisted and synchronized as graph nodes. It only emits a relationship where
+both typed endpoints and an explicit relationship trigger occur in the same
+evidence segment; entity co-occurrence does not create an edge.
+
+Supported evidence-backed types are `ACCUSED_IN`, `VICTIM_IN`,
+`CLASSIFIED_AS`, `REGISTERED_AT`, `HEARD_IN`, `OCCURRED_AT`, `USES`, `OWNS`,
+`ASSOCIATED_WITH`, `SEEN_WITH`, and `TRANSFERRED_TO`.
+
+Each extraction is stored in MongoDB as `RelationshipEvidence` and mirrored to
+Neo4j using its `evidenceId`. The provenance fields are `sourceDocumentId`,
+`pageNumber`, `sourceEntityIds`, `confidence`, `extractedEvidence`, optional
+`timestamp`, and `modelVersion`. Distinct evidence records create distinct
+Neo4j edges, so later documents cannot overwrite prior evidence.
+
 ## Example Request
 
 ```bash

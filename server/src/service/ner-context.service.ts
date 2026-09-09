@@ -28,6 +28,9 @@ const ORGANIZATION_CONTEXT = [
   "agency",
 ];
 
+const POLICE_STATION_CONTEXT = ["police station", "p.s.", "ps:"];
+const COURT_CONTEXT = ["court", "magistrate", "sessions judge"];
+
 const PERSON_CONTEXT = [
   "name",
   "father's name",
@@ -59,6 +62,23 @@ export const applyEntityContextRules = (
     const actualLineEnd = lineEnd === -1 ? text.length : lineEnd;
 
     const line = text.slice(lineStart, actualLineEnd);
+
+    if (
+      hasContext(line, POLICE_STATION_CONTEXT) &&
+      entity.entity_type !== "PERSON"
+    ) {
+      return {
+        ...entity,
+        entity_type: "POLICE_STATION",
+      };
+    }
+
+    if (hasContext(line, COURT_CONTEXT) && entity.entity_type !== "PERSON") {
+      return {
+        ...entity,
+        entity_type: "COURT",
+      };
+    }
 
     /*
      * Location context has highest priority for

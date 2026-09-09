@@ -30,11 +30,25 @@ const normalizeVehicle = (value: string): string => {
   return /^[A-Z]{2}\d{1,2}[A-Z]{1,3}\d{1,4}$/.test(compact) ? compact : "";
 };
 
+const normalizeIdentifier = (value: string): string =>
+  cleanEvidenceForMatching(value)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+
 const normalizeFirOrCase = (value: string, prefix: "fir" | "case"): string => {
   const cleaned = cleanEvidenceForMatching(value);
   const match = cleaned.match(/(?:fir|case)?\s*(?:no\.?|number)?\s*[-:#]?\s*(\d{1,6})\s*\/\s*((?:19|20)\d{2})/i);
 
-  return match ? `${prefix}-${match[1]}/${match[2]}` : "";
+  if (match) {
+    return `${prefix}-${match[1]}/${match[2]}`;
+  }
+
+  if (prefix === "case") {
+    const caseNumber = cleaned.match(/\bcase\s*(?:no\.?|number)?\s*[-:#]?\s*(\d{1,6})\b/i);
+    return caseNumber ? `case-${caseNumber[1]}` : "";
+  }
+
+  return "";
 };
 
 const normalizeLocation = (value: string): string =>
@@ -58,6 +72,9 @@ export const normalizeEntityValue = (
   switch (entityType) {
     case "PHONE":
       return normalizePhone(value);
+    case "DEVICE":
+    case "ACCOUNT":
+      return normalizeIdentifier(value);
     case "VEHICLE":
       return normalizeVehicle(value);
     case "FIR":

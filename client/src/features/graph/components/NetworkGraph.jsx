@@ -160,7 +160,7 @@ const handleNodeTap = (event) => {
         handleNodeTap
       );
     };
-  }, [elements]);
+  }, [elements, onNodeSelect]);
 
   if (loading) {
     return (

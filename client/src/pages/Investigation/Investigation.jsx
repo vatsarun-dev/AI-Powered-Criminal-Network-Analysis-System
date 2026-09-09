@@ -18,7 +18,6 @@ const entityId = selectedEntity?.id;
 
   useEffect(() => {
    if (!entityId) {
-  setConnections([]);
   return;
 }
 
@@ -39,7 +38,9 @@ const entityId = selectedEntity?.id;
     loadConnections();
   }, [entityId]);
 
-  const locations = connections
+  const activeConnections = entityId ? connections : [];
+
+  const locations = activeConnections
     .flatMap((item) => [
       item.source,
       item.target,
@@ -65,11 +66,11 @@ const entityId = selectedEntity?.id;
         <section className="investigation-panel timeline-panel">
           <div className="panel-header">
             <h2>Timeline</h2>
-            <span>{connections.length} connections</span>
+            <span>{activeConnections.length} connections</span>
           </div>
 
           <Timeline
-            connections={connections}
+            connections={activeConnections}
             selectedEvent={selectedEvent}
             onEventSelect={setSelectedEvent}
           />

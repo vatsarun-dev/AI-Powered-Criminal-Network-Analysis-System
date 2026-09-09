@@ -3,6 +3,8 @@ export const ENTITY_TYPES = [
   "LOCATION",
   "ORGANIZATION",
   "PHONE",
+  "DEVICE",
+  "ACCOUNT",
   "VEHICLE",
   "FIR",
   "CASE",

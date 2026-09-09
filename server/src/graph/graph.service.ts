@@ -41,19 +41,28 @@ export const createRelationship = async (
   });
 
   try {
+    const evidenceId =
+      typeof properties.evidenceId === "string" && properties.evidenceId
+        ? properties.evidenceId
+        : undefined;
+    const relationshipIdentity = evidenceId
+      ? " {evidenceId: $evidenceId}"
+      : "";
     const query = `
       MATCH (from:${fromLabel} {id: $fromId})
       MATCH (to:${toLabel} {id: $toId})
-      MERGE (from)-[r:${relationship}]->(to)
+      MERGE (from)-[r:${relationship}${relationshipIdentity}]->(to)
       SET r += $properties
       RETURN from, r, to
     `;
 
-    const result = await session.run(query, {
+    const parameters = {
       fromId,
       toId,
       properties,
-    });
+      ...(evidenceId ? { evidenceId } : {}),
+    };
+    const result = await session.run(query, parameters);
 
     return result.records[0];
   } finally {

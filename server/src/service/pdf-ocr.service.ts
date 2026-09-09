@@ -44,6 +44,7 @@ export const extractTextFromPdf = async (
       entities,
       sourceDocumentId,
       pageNumber: i + 1,
+      text: cleanedText,
     });
 
     results.push(savedResult);

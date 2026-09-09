@@ -150,6 +150,27 @@ Throw errors from `src/shared/error/globalError.ts` inside controllers/services.
 
 MongoDB is configured through `DATABASE_URL`. Mongoose connects during `src/server.ts` startup before Express starts listening.
 
+## Entity Resolution (Phase 2)
+
+`POST /api/graph/resolve` is a read-only resolution endpoint. It accepts any
+combination of `personId`, `name`, `phone`, `deviceId`, `accountId`,
+`locationId`, `caseId`, and `strongIdentifiers`, plus optional
+`sourceEntityIds` from the original Mongo evidence records.
+
+It returns `MATCHED`, `POSSIBLE_MATCH`, or `NO_MATCH` with a confidence,
+matched signals, explanation, candidate source entity IDs, and candidate
+summaries. A similar or phonetically equivalent name alone always returns
+`POSSIBLE_MATCH`; it never merges records.
+
+```json
+{
+  "sourceEntityIds": ["synthetic-fir-page-2-person"],
+  "name": "Rakesh Kumaar",
+  "phone": "98765-43210",
+  "locationId": "synthetic-location-1"
+}
+```
+
 ## Example Request
 
 ```bash

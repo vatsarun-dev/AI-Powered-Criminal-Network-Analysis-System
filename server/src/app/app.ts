@@ -6,6 +6,7 @@ import errorHandler from "../middlewares/error.middleware.js";
 import securityMiddleware from "../middlewares/security.middleware.js";
 import graphRoutes from "../graph/graph.routes.js";
 import alertRoutes from "../modules/alert/alert.routes.js";
+import analyticsRoutes from "../modules/analytics/analytics.routes.js";
 
 export default function createApp(): Express {
   const app = express();
@@ -17,6 +18,7 @@ export default function createApp(): Express {
   app.use("/api/uploads", fileRoutes);
   app.use("/api/graph", graphRoutes);
   app.use("/api/alerts", alertRoutes);
+  app.use("/api/analytics", analyticsRoutes);
 
   app.use(errorHandler);
 

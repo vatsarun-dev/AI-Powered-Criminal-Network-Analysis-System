@@ -1,6 +1,11 @@
-import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
+import { randomUUID } from "node:crypto";
 
-export const getDegreeCentrality = async () => {
+import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
+import neo4j from "neo4j-driver";
+
+const boundedLimit = (limit: number): number => Math.min(Math.max(limit, 1), 100);
+
+export const getDegreeCentrality = async (limit = 50) => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,
   });
@@ -15,9 +20,10 @@ export const getDegreeCentrality = async () => {
         n.name AS name,
         count(r) AS degree
       ORDER BY degree DESC
+      LIMIT $limit
     `;
 
-    const result = await session.run(query);
+    const result = await session.run(query, { limit: neo4j.int(boundedLimit(limit)) });
 
     return result.records.map((record) => ({
       id: record.get("id"),
@@ -30,7 +36,7 @@ export const getDegreeCentrality = async () => {
   }
 };
 
-export const getBetweennessCentrality = async () => {
+export const getBetweennessCentrality = async (limit = 50) => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,
   });
@@ -57,9 +63,10 @@ export const getBetweennessCentrality = async () => {
         middle.name AS name,
         count(*) AS betweenness
       ORDER BY betweenness DESC
+      LIMIT $limit
     `;
 
-    const result = await session.run(query);
+    const result = await session.run(query, { limit: neo4j.int(boundedLimit(limit)) });
 
     return result.records.map((record) => ({
       id: record.get("id"),
@@ -75,19 +82,15 @@ export const getLouvainCommunities = async () => {
   const session = neo4jDriver.session({
     database: neo4jDatabase,
   });
+  const graphName = `criminal-network-${randomUUID()}`;
+  let projected = false;
 
   try {
-    // Remove existing graph if it is already present
-    await session.run(`
-      CALL gds.graph.drop('criminal-network', false)
-      YIELD graphName
-      RETURN graphName
-    `);
-
-    // Create a fresh graph projection
+    // A uniquely named, in-memory GDS projection avoids touching a projection
+    // created by another request or user. It is removed in the finally block.
     const projectQuery = `
       CALL gds.graph.project(
-        'criminal-network',
+        $graphName,
         '*',
         '*',
         {
@@ -100,33 +103,37 @@ export const getLouvainCommunities = async () => {
       RETURN graphName, nodeCount, relationshipCount
     `;
 
-    await session.run(projectQuery);
+    await session.run(projectQuery, { graphName });
+    projected = true;
 
     // Run Louvain
     const louvainQuery = `
-      CALL gds.louvain.stream('criminal-network')
+      CALL gds.louvain.stream($graphName)
       YIELD nodeId, communityId
 
       RETURN nodeId, communityId
       ORDER BY communityId
     `;
 
-    const result = await session.run(louvainQuery);
+    const result = await session.run(louvainQuery, { graphName });
 
     const results = result.records.map((record) => ({
       nodeId: record.get("nodeId").toNumber(),
       communityId: record.get("communityId").toNumber(),
     }));
 
-    // Cleanup graph after algorithm finishes
-    await session.run(`
-      CALL gds.graph.drop('criminal-network', false)
-      YIELD graphName
-      RETURN graphName
-    `);
-
     return results;
   } finally {
+    if (projected) {
+      await session.run(
+        `
+          CALL gds.graph.drop($graphName, false)
+          YIELD graphName
+          RETURN graphName
+        `,
+        { graphName },
+      );
+    }
     await session.close();
   }
 };

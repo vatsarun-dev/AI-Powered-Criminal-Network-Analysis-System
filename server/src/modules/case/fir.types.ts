@@ -13,6 +13,10 @@ export type FirParty = {
   phone?: string;
   address?: string;
   identifier?: string;
+  /** Optional recorded administrative metadata; used only for aggregate reports. */
+  gender?: string;
+  /** Optional recorded administrative metadata; used only for aggregate reports. */
+  religion?: string;
 };
 
 export type InvestigatingOfficer = FirParty & {

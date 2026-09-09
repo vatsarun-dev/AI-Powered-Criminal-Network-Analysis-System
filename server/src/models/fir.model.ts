@@ -8,6 +8,8 @@ const partySchema = new Schema(
     phone: { type: String, trim: true, maxlength: 32 },
     address: { type: String, trim: true, maxlength: 1000 },
     identifier: { type: String, trim: true, maxlength: 200 },
+    gender: { type: String, trim: true, maxlength: 50 },
+    religion: { type: String, trim: true, maxlength: 100 },
     badgeNumber: { type: String, trim: true, maxlength: 100 },
   },
   { _id: false },
@@ -29,24 +31,32 @@ export type FirMongoDocument = {
     phone?: string;
     address?: string;
     identifier?: string;
+    gender?: string;
+    religion?: string;
   };
   victims: Array<{
     name: string;
     phone?: string;
     address?: string;
     identifier?: string;
+    gender?: string;
+    religion?: string;
   }>;
   accused: Array<{
     name: string;
     phone?: string;
     address?: string;
     identifier?: string;
+    gender?: string;
+    religion?: string;
   }>;
   investigatingOfficer?: {
     name: string;
     phone?: string;
     address?: string;
     identifier?: string;
+    gender?: string;
+    religion?: string;
     badgeNumber?: string;
   };
   court?: string;

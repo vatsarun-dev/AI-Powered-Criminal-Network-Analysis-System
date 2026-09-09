@@ -1,10 +1,11 @@
 import { createNode } from "../../graph/graph.service.js";
 
 import type { NodeLabel } from "../../graph/graph.constants.js";
+import type { EntityType } from "../../types/entity.js";
 
 import { EntityModel } from "../../models/entity.model.js";
 
-const ENTITY_TO_NODE_LABEL: Record<string, NodeLabel> = {
+const ENTITY_TO_NODE_LABEL: Partial<Record<EntityType, NodeLabel>> = {
   PERSON: "PERSON",
   LOCATION: "LOCATION",
   ORGANIZATION: "ORGANIZATION",
@@ -20,7 +21,9 @@ export const syncEntityToGraph = async (entityId: string) => {
   const nodeLabel = ENTITY_TO_NODE_LABEL[entity.entityType];
 
   if (!nodeLabel) {
-    throw new Error(`Unsupported entity type: ${entity.entityType}`);
+    // Phase 1 persists new structured entities in MongoDB. They are not
+    // graph nodes until the evidence-backed graph model is extended in Phase 4.
+    return null;
   }
 
   return createNode(nodeLabel, {

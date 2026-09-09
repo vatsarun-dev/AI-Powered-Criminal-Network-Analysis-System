@@ -1,10 +1,11 @@
 import { Schema, model, Types } from "mongoose";
+import { ENTITY_TYPES, EXTRACTION_SOURCES } from "../types/entity.js";
 
 const entitySchema = new Schema(
   {
     entityType: {
       type: String,
-      enum: ["PERSON", "LOCATION", "ORGANIZATION"],
+      enum: ENTITY_TYPES,
       required: true,
       index: true,
     },
@@ -47,6 +48,19 @@ const entitySchema = new Schema(
       type: Number,
       required: true,
       min: 0,
+    },
+
+    // Records whether ML, deterministic rules, or both produced this entity.
+    extractionSources: {
+      type: [String],
+      enum: EXTRACTION_SOURCES,
+      default: ["NER"],
+    },
+
+    // Keeps every raw variant when overlapping extractors are de-duplicated.
+    originalValues: {
+      type: [String],
+      default: [],
     },
   },
   {

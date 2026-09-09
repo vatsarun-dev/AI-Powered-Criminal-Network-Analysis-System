@@ -7,8 +7,14 @@ import {
 
 import { resolvePersonRequest } from "./entityResolution.controller.js";
 import {
+  caseNetwork,
+  filteredGraph,
+  getNeighbors,
+  getNode,
+  listRelationships,
   searchNodes,
   nodeConnections,
+  personNetwork,
   shortestPath,
 } from "./graphQuery.controller.js";
 
@@ -25,6 +31,13 @@ router.post("/nodes", createGraphNode);
 router.post("/relationships", createGraphRelationship);
 
 router.post("/resolve", resolvePersonRequest);
+
+router.get("/nodes/:id/neighbors", getNeighbors);
+router.get("/nodes/:id", getNode);
+router.get("/relationships", listRelationships);
+router.get("/cases/:id/network", caseNetwork);
+router.get("/persons/:id/network", personNetwork);
+router.get("/filtered", filteredGraph);
 
 router.get("/analytics/centrality", degreeCentrality);
 

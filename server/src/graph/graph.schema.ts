@@ -26,6 +26,12 @@ const constraints = [
   `,
 
   `
+  CREATE CONSTRAINT vehicle_id_unique IF NOT EXISTS
+  FOR (v:VEHICLE)
+  REQUIRE v.id IS UNIQUE
+  `,
+
+  `
   CREATE CONSTRAINT location_id_unique IF NOT EXISTS
   FOR (l:LOCATION)
   REQUIRE l.id IS UNIQUE
@@ -41,6 +47,30 @@ const constraints = [
   CREATE CONSTRAINT event_id_unique IF NOT EXISTS
   FOR (e:EVENT)
   REQUIRE e.id IS UNIQUE
+  `,
+
+  `
+  CREATE CONSTRAINT organization_id_unique IF NOT EXISTS
+  FOR (o:ORGANIZATION)
+  REQUIRE o.id IS UNIQUE
+  `,
+
+  `
+  CREATE CONSTRAINT police_station_id_unique IF NOT EXISTS
+  FOR (p:POLICE_STATION)
+  REQUIRE p.id IS UNIQUE
+  `,
+
+  `
+  CREATE CONSTRAINT court_id_unique IF NOT EXISTS
+  FOR (c:COURT)
+  REQUIRE c.id IS UNIQUE
+  `,
+
+  `
+  CREATE CONSTRAINT crime_category_id_unique IF NOT EXISTS
+  FOR (c:CRIME_CATEGORY)
+  REQUIRE c.id IS UNIQUE
   `,
 ];
 

@@ -1,6 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import useLenis from "./hooks/useLenis";
+import "./styles/dashboard.css";
+import "./styles/upload.css";
+import "./styles/graph.css";
 import "./App.css";
 
 function App() {

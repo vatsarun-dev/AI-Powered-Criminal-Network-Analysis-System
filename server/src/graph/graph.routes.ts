@@ -5,7 +5,7 @@ import {
   createGraphRelationship,
 } from "./graph.controller.js";
 
-import { resolvePerson } from "./entityResolution.controller.js";
+import { resolvePersonRequest } from "./entityResolution.controller.js";
 import {
   searchNodes,
   nodeConnections,
@@ -24,7 +24,7 @@ router.post("/nodes", createGraphNode);
 
 router.post("/relationships", createGraphRelationship);
 
-router.post("/resolve", resolvePerson);
+router.post("/resolve", resolvePersonRequest);
 
 router.get("/analytics/centrality", degreeCentrality);
 

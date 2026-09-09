@@ -23,13 +23,21 @@ export type InvestigatingOfficer = FirParty & {
   badgeNumber?: string;
 };
 
+/** Coordinates captured from a verified FIR, station, or district source. */
+export type GeographicCoordinates = {
+  latitude: number;
+  longitude: number;
+};
+
 export type FirCreateInput = {
   firNumber: string;
   year: number;
   registrationDate: Date;
   incidentDate?: Date;
   district: string;
+  districtCoordinates?: GeographicCoordinates;
   policeStation: string;
+  policeStationCoordinates?: GeographicCoordinates;
   crimeCategory: string;
   sections: string[];
   description: string;

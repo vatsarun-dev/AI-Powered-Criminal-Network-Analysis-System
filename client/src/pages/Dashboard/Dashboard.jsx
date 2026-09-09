@@ -75,7 +75,7 @@ function Dashboard() {
             </Link>
 
             <Link
-              to="/investigation"
+              to="/map"
               className="sidebar-link"
             >
               <Map size={16} />

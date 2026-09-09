@@ -43,7 +43,11 @@ const toFirResponse = (fir: StoredFir): FirResponse => ({
   registrationDate: fir.registrationDate.toISOString(),
   ...(fir.incidentDate ? { incidentDate: fir.incidentDate.toISOString() } : {}),
   district: fir.district,
+  ...(fir.districtCoordinates ? { districtCoordinates: fir.districtCoordinates } : {}),
   policeStation: fir.policeStation,
+  ...(fir.policeStationCoordinates
+    ? { policeStationCoordinates: fir.policeStationCoordinates }
+    : {}),
   crimeCategory: fir.crimeCategory,
   sections: fir.sections,
   description: fir.description,

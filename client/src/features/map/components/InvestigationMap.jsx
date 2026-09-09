@@ -13,15 +13,14 @@ const MapFocus = ({ selectedLocation }) => {
   const map = useMap();
 
   useEffect(() => {
-    if (
-      selectedLocation?.latitude != null &&
-      selectedLocation?.longitude != null
-    ) {
-      map.flyTo(
-        [selectedLocation.latitude, selectedLocation.longitude],
-        15,
-        { duration: 1 }
-      );
+    const latitude = Number(selectedLocation?.properties?.latitude ?? selectedLocation?.properties?.lat);
+    const longitude = Number(
+      selectedLocation?.properties?.longitude ??
+      selectedLocation?.properties?.lng ??
+      selectedLocation?.properties?.lon,
+    );
+    if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+      map.flyTo([latitude, longitude], 15, { duration: 1 });
     }
   }, [selectedLocation, map]);
 
@@ -33,12 +32,24 @@ const InvestigationMap = ({
   selectedLocation,
   onLocationSelect,
 }) => {
-  const defaultCenter = [28.6139, 77.209];
+  const mappableLocations = locations.flatMap((location) => {
+    const latitude = Number(location.properties?.latitude ?? location.properties?.lat);
+    const longitude = Number(
+      location.properties?.longitude ?? location.properties?.lng ?? location.properties?.lon,
+    );
+    return Number.isFinite(latitude) && Number.isFinite(longitude)
+      ? [{ location, latitude, longitude }]
+      : [];
+  });
+
+  if (!mappableLocations.length) {
+    return <div className="crime-map-empty">No evidence location has verified coordinates.</div>;
+  }
 
   return (
     <MapContainer
-      center={defaultCenter}
-      zoom={5}
+      center={[mappableLocations[0].latitude, mappableLocations[0].longitude]}
+      zoom={12}
       className="investigation-map"
     >
       <TileLayer
@@ -48,25 +59,7 @@ const InvestigationMap = ({
 
       <MapFocus selectedLocation={selectedLocation} />
 
-      {locations.map((location) => {
-        const latitude = Number(
-          location.properties?.latitude ??
-            location.properties?.lat
-        );
-
-        const longitude = Number(
-          location.properties?.longitude ??
-            location.properties?.lng ??
-            location.properties?.lon
-        );
-
-        if (
-          Number.isNaN(latitude) ||
-          Number.isNaN(longitude)
-        ) {
-          return null;
-        }
-
+      {mappableLocations.map(({ location, latitude, longitude }) => {
         return (
           <Marker
             key={location.id}

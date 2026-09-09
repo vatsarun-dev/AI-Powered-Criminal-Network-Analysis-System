@@ -116,15 +116,27 @@ const party = (
   if (!isPlainObject(value)) {
     throw new BadRequestError(`${field} must be an object`);
   }
-  const allowed = new Set(["name", "phone", "address", "identifier", ...(officer ? ["badgeNumber"] : [])]);
+  const allowed = new Set([
+    "name",
+    "phone",
+    "address",
+    "identifier",
+    "gender",
+    "religion",
+    ...(officer ? ["badgeNumber"] : []),
+  ]);
   rejectUnknownFields(value, allowed);
   const result: FirParty | InvestigatingOfficer = { name: requiredString(value.name, `${field}.name`, 200) };
   const phone = optionalString(value.phone, `${field}.phone`, 32);
   const address = optionalString(value.address, `${field}.address`, 1000);
   const identifier = optionalString(value.identifier, `${field}.identifier`, 200);
+  const gender = optionalString(value.gender, `${field}.gender`, 50);
+  const religion = optionalString(value.religion, `${field}.religion`, 100);
   if (phone) result.phone = phone;
   if (address) result.address = address;
   if (identifier) result.identifier = identifier;
+  if (gender) result.gender = gender;
+  if (religion) result.religion = religion;
   if (officer) {
     const badgeNumber = optionalString(value.badgeNumber, `${field}.badgeNumber`, 100);
     if (badgeNumber) (result as InvestigatingOfficer).badgeNumber = badgeNumber;

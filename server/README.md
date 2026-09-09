@@ -238,6 +238,29 @@ List filters are `q`, `firNumber`, `year`, `district`, `policeStation`,
 when supplied, must be an existing uploaded FIR file. Deleting an FIR never
 deletes its original document, extracted evidence, or graph provenance.
 
+## Crime Analytics (Phase 6)
+
+Analytics are calculated from live MongoDB FIR records and the existing Neo4j
+graph—no statistics are stored or hardcoded. All Phase 6 endpoints require an
+authenticated administrator:
+
+- `GET /api/analytics/crime-categories`
+- `GET /api/analytics/districts`
+- `GET /api/analytics/demographics/gender?role=ALL|COMPLAINANT|VICTIM|ACCUSED`
+- `GET /api/analytics/demographics/religion?role=ALL|COMPLAINANT|VICTIM|ACCUSED`
+- `GET /api/analytics/graph/degree?limit=1..100`
+- `GET /api/analytics/graph/betweenness?limit=1..100`
+- `GET /api/analytics/graph/communities`
+- `GET /api/analytics/graph/shortest-path?from=&to=`
+
+The FIR filters `q`, `firNumber`, `year`, `district`, `policeStation`,
+`crimeCategory`, `status`, `registrationDateFrom`, `registrationDateTo`,
+`incidentDateFrom`, and `incidentDateTo` can be applied to the MongoDB
+aggregate endpoints. Gender and religion reports contain descriptive aggregate
+party-mention counts only, including missing-value totals. They must not be
+used for individual criminal-risk prediction, profiling, or decisions about a
+person.
+
 ## Example Request
 
 ```bash

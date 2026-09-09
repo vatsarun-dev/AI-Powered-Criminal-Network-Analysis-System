@@ -136,6 +136,37 @@ test("does not infer relationships from entity co-occurrence", () => {
   assert.deepEqual(relationships, []);
 });
 
+test("does not create cross-pair relationships from multiple typed entities", () => {
+  const text =
+    "Asha Singh was named as an accused in Case 123; Rahul Verma is mentioned in Case 456.";
+  const asha = entityAt(text, "Asha Singh", "PERSON");
+  const firstCase = entityAt(text, "Case 123", "CASE");
+  const rahul = entityAt(text, "Rahul Verma", "PERSON");
+  const secondCase = entityAt(text, "Case 456", "CASE");
+
+  const relationships = extractEvidenceBackedRelationships({
+    text,
+    sourceDocumentId: syntheticDocumentId,
+    pageNumber: 1,
+    entities: [asha, firstCase, rahul, secondCase],
+  });
+
+  assert.deepEqual(
+    relationships.map((relationship) => ({
+      relationshipType: relationship.relationshipType,
+      fromEntityId: relationship.fromEntityId,
+      toEntityId: relationship.toEntityId,
+    })),
+    [
+      {
+        relationshipType: "ACCUSED_IN",
+        fromEntityId: asha.id,
+        toEntityId: firstCase.id,
+      },
+    ],
+  );
+});
+
 test("runs synthetic FIR OCR-output through NER/regex, normalization, resolution, and relationship extraction", () => {
   // This is fictional text emitted by the OCR stage; it avoids real personal data.
   const ocrOutput =

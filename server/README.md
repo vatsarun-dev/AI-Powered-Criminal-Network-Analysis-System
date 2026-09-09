@@ -217,6 +217,27 @@ Comma-separated `labels` and `relationshipTypes` are validated against the
 graph constants. The schema initializer adds only `IF NOT EXISTS` constraints;
 it never clears existing Neo4j data.
 
+## FIR Management (Phase 5)
+
+Detailed FIR records use MongoDB as the source of truth and are available to
+authenticated administrators under `/api/cases/firs`. The original Neo4j-only
+`/api/cases` endpoints remain unchanged for existing clients.
+
+- `POST /api/cases/firs` — create an FIR
+- `GET /api/cases/firs` — list, search, and filter FIRs
+- `GET /api/cases/firs/:id` — retrieve one FIR
+- `PATCH /api/cases/firs/:id` — update an FIR
+- `DELETE /api/cases/firs/:id` — delete only the management record
+- `GET /api/cases/firs/:id/evidence?pageNumber=` — document, OCR, entities,
+  and evidence-backed relationships
+- `GET /api/cases/firs/:id/network?depth=1..3` — Neo4j case/evidence network
+
+List filters are `q`, `firNumber`, `year`, `district`, `policeStation`,
+`crimeCategory`, `status`, `registrationDateFrom`, `registrationDateTo`,
+`incidentDateFrom`, `incidentDateTo`, `page`, and `limit`. `sourceDocument`,
+when supplied, must be an existing uploaded FIR file. Deleting an FIR never
+deletes its original document, extracted evidence, or graph provenance.
+
 ## Example Request
 
 ```bash

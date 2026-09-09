@@ -208,36 +208,56 @@ const explicitTimestamp = (text: string): string | undefined => {
   return date.toISOString();
 };
 
-const sourceAndTargetsForRule = (
+/**
+ * All supported rules are expressed in the conservative forward form
+ * `source ... trigger ... target`. Restricting an assertion to the closest
+ * typed endpoints around the trigger prevents a sentence with several people
+ * or cases from generating unsupported cross-product relationships.
+ */
+const endpointsForRuleTrigger = (
   rule: RelationshipRule,
   entities: RelationshipExtractionEntity[],
-): Array<[RelationshipExtractionEntity, RelationshipExtractionEntity]> => {
-  const sources = entities.filter((entity) =>
-    rule.sourceTypes.includes(entity.entityType),
-  );
-  const targets = entities.filter((entity) =>
-    rule.targetTypes.includes(entity.entityType),
-  );
-  const pairs: Array<
-    [RelationshipExtractionEntity, RelationshipExtractionEntity]
-  > = [];
+  triggerStart: number,
+  triggerEnd: number,
+): [RelationshipExtractionEntity, RelationshipExtractionEntity] | null => {
+  const source = entities
+    .filter(
+      (entity) =>
+        rule.sourceTypes.includes(entity.entityType) &&
+        entity.charOffset < triggerStart,
+    )
+    .sort((left, right) => right.charOffset - left.charOffset)[0];
+  const target = entities
+    .filter(
+      (entity) =>
+        rule.targetTypes.includes(entity.entityType) &&
+        entity.charOffset >= triggerEnd,
+    )
+    .sort((left, right) => left.charOffset - right.charOffset)[0];
 
-  for (const source of sources) {
-    for (const target of targets) {
-      if (source.id === target.id) continue;
-      // For same-typed endpoints, textual order gives one deterministic
-      // direction and avoids inferring a reverse duplicate.
-      if (
-        source.entityType === target.entityType &&
-        source.charOffset >= target.charOffset
-      ) {
-        continue;
-      }
-      pairs.push([source, target]);
-    }
+  if (!source || !target || source.id === target.id) {
+    return null;
   }
 
-  return pairs;
+  return [source, target];
+};
+
+const findRuleTriggers = (
+  trigger: RegExp,
+  text: string,
+): Array<{ start: number; end: number }> => {
+  const flags = trigger.flags.includes("g")
+    ? trigger.flags
+    : `${trigger.flags}g`;
+  const matcher = new RegExp(trigger.source, flags);
+  const matches: Array<{ start: number; end: number }> = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = matcher.exec(text)) !== null) {
+    matches.push({ start: match.index, end: match.index + match[0].length });
+  }
+
+  return matches;
 };
 
 const evidenceIdFor = (
@@ -282,10 +302,15 @@ export const extractEvidenceBackedRelationships = (input: {
     if (segmentEntities.length < 2) continue;
 
     for (const rule of relationshipRules) {
-      rule.trigger.lastIndex = 0;
-      if (!rule.trigger.test(segment.text)) continue;
-
-      for (const [from, to] of sourceAndTargetsForRule(rule, segmentEntities)) {
+      for (const trigger of findRuleTriggers(rule.trigger, segment.text)) {
+        const endpoints = endpointsForRuleTrigger(
+          rule,
+          segmentEntities,
+          segment.start + trigger.start,
+          segment.start + trigger.end,
+        );
+        if (!endpoints) continue;
+        const [from, to] = endpoints;
         const evidenceId = evidenceIdFor(
           input.sourceDocumentId,
           input.pageNumber,

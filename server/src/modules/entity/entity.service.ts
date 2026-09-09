@@ -2,9 +2,8 @@ import { EntityModel } from "../../models/entity.model.js";
 
 import type { NERResult } from "../../service/ner.service.js";
 
-import { normalizeEntityValue } from "../../service/entity-normalization.service.js";
-
 import { syncEntityToGraph } from "./entity-graph.service.js";
+import { prepareEntityDocuments } from "../../service/entity-persistence-preparation.service.js";
 
 type SaveEntitiesParams = {
   entities: NERResult[];
@@ -23,23 +22,15 @@ export const saveEntities = async ({
     return [];
   }
 
-  const documents = entities.map((entity) => ({
-    entityType: entity.entity_type,
-
-    // Preserve original NER output
-    value: entity.value,
-
-    // Store normalized searchable value
-    normalizedValue: normalizeEntityValue(entity.value, entity.entity_type),
-
-    confidence: entity.confidence,
-
+  const documents = prepareEntityDocuments({
+    entities,
     sourceDocumentId,
-
     pageNumber,
+  });
 
-    charOffset: entity.char_offset,
-  }));
+  if (!documents.length) {
+    return [];
+  }
 
   // Save entities in MongoDB
   const savedEntities = await EntityModel.insertMany(documents);

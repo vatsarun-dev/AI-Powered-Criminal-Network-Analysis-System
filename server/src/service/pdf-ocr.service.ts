@@ -4,6 +4,8 @@ import { OCRResult } from "../models/ocr-result.model.js";
 import { extractNamedEntities } from "./ner.service.js";
 import { saveEntities } from "../modules/entity/entity.service.js";
 import { cleanOCRText } from "./ocr-cleanup.service.js";
+import { extractDomainEntities } from "./domain-extraction.service.js";
+import { deduplicateExtractedEntities } from "./entity-deduplication.service.js";
 
 export const extractTextFromPdf = async (
   pdfPath: string,
@@ -24,7 +26,12 @@ export const extractTextFromPdf = async (
 
     const cleanedText = cleanOCRText(ocrResult.text);
 
-    const entities = await extractNamedEntities(cleanedText);
+    const namedEntities = await extractNamedEntities(cleanedText);
+    const domainEntities = extractDomainEntities(cleanedText);
+    const entities = deduplicateExtractedEntities([
+      ...namedEntities,
+      ...domainEntities,
+    ]);
 
     const savedResult = await OCRResult.create({
       sourceDocumentId,

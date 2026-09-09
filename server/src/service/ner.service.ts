@@ -4,15 +4,9 @@ import {
   removeOCRFieldLabelPrefix,
 } from "./ocr-cleanup.service.js";
 import { applyEntityContextRules } from "./ner-context.service.js";
+import type { EntityType, ExtractedEntity } from "../types/entity.js";
 
-type EntityType = "PERSON" | "LOCATION" | "ORGANIZATION";
-
-export type NERResult = {
-  entity_type: EntityType;
-  value: string;
-  confidence: number;
-  char_offset: number;
-};
+export type NERResult = ExtractedEntity;
 
 type RawEntity = {
   entity_group?: string;
@@ -274,6 +268,8 @@ export const extractNamedEntities = async (
         value,
         confidence: entity.score,
         char_offset: charOffset,
+        extractionSources: ["NER"],
+        originalValues: [value],
       });
     }
 

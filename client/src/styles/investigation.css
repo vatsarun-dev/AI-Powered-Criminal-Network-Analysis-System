@@ -51,6 +51,119 @@
   color: #aaa;
 }
 
+.rag-panel {
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid #222;
+  background: #0d0d0d;
+}
+
+.rag-panel-header,
+.rag-result-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rag-panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.rag-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px auto;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.rag-form input {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #292929;
+  background: #111;
+  color: #f5f5f0;
+}
+
+.rag-form button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 92px;
+  border: 1px solid #c8ff00;
+  background: #c8ff00;
+  color: #080808;
+  cursor: pointer;
+}
+
+.rag-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.rag-result {
+  margin-top: 18px;
+  border-top: 1px solid #222;
+  padding-top: 16px;
+}
+
+.rag-answer {
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.rag-result-meta {
+  justify-content: flex-start;
+  margin-top: 14px;
+  color: #c8ff00;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.rag-sources {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rag-sources li {
+  padding: 12px;
+  border-left: 2px solid #c8ff00;
+  background: #111;
+}
+
+.rag-sources strong,
+.rag-sources span {
+  display: block;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+}
+
+.rag-sources strong {
+  color: #c8ff00;
+}
+
+.rag-sources span {
+  margin-top: 4px;
+  color: #777;
+}
+
+.rag-sources p {
+  margin: 8px 0 0;
+  color: #bbb;
+  font-size: 12px;
+  line-height: 1.5;
+}
 
 /* ================================
    MAIN GRID
@@ -89,7 +202,6 @@
   font-family: "DM Mono", monospace;
   font-size: 10px;
 }
-
 
 /* ================================
    TIMELINE
@@ -198,7 +310,6 @@
   letter-spacing: 0.08em;
 }
 
-
 /* ================================
    MAP
 ================================ */
@@ -242,7 +353,6 @@
   color: #888;
 }
 
-
 /* ================================
    SCROLLBAR
 ================================ */
@@ -262,7 +372,6 @@
 .timeline::-webkit-scrollbar-thumb:hover {
   background: #c8ff00;
 }
-
 
 /* ================================
    RESPONSIVE
@@ -370,7 +479,6 @@
     0 0 0 6px rgba(200, 255, 0, 0.08),
     0 0 28px rgba(200, 255, 0, 0.55);
 }
-
 
 /* =========================
    MAP POPUP

@@ -30,6 +30,7 @@ export const RELATIONSHIP_TYPES = [
   "SEEN_WITH",
   "TRANSFERRED_TO",
   "OCCURRED_AT",
+  "CALLED",
   "RELATED_TO",
 ] as const;
 

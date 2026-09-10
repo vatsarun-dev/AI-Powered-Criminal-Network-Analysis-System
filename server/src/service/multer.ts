@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
+import { randomUUID } from "node:crypto";
 
 const uploadDirectory = path.join(process.cwd(), "src", "uploads");
 
@@ -11,7 +12,7 @@ if (!fs.existsSync(uploadDirectory)) {
 const storage = multer.diskStorage({
   destination: uploadDirectory,
   filename: (_req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, `${randomUUID()}${path.extname(file.originalname).toLowerCase()}`);
   },
 });
 

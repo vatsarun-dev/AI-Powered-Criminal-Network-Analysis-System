@@ -35,6 +35,7 @@ const stablePrefixForType: Record<EntityType, string> = {
   POLICE_STATION: "police-station",
   COURT: "court",
   CRIME_CATEGORY: "crime-category",
+  EVENT: "event",
 };
 
 /**

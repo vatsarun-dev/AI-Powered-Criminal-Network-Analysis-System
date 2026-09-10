@@ -11,11 +11,12 @@ export const ENTITY_TYPES = [
   "POLICE_STATION",
   "COURT",
   "CRIME_CATEGORY",
+  "EVENT",
 ] as const;
 
 export type EntityType = (typeof ENTITY_TYPES)[number];
 
-export const EXTRACTION_SOURCES = ["NER", "REGEX"] as const;
+export const EXTRACTION_SOURCES = ["NER", "REGEX", "STRUCTURED"] as const;
 
 export type ExtractionSource = (typeof EXTRACTION_SOURCES)[number];
 

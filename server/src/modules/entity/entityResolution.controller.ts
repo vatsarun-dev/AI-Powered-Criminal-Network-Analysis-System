@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 
+import asyncHandler from "../../utils/asyncHandler.js";
+import { successResponse } from "../../utils/ApiResponse.js";
 import {
   hasResolutionSignal,
   resolvePerson as resolvePersonEntity,
@@ -68,32 +70,36 @@ const readResolutionRequest = (body: unknown): EntityResolutionRequest => {
   return request;
 };
 
-export const resolvePersonRequest = async (req: Request, res: Response) => {
-  try {
-    const request = readResolutionRequest(req.body);
+export const resolvePersonRequest = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const request = readResolutionRequest(req.body);
 
-    if (!hasResolutionSignal(request)) {
-      return res.status(400).json({
-        message:
-          "Provide personId, phone, name, deviceId, accountId, locationId, caseId, or strongIdentifiers.",
+      if (!hasResolutionSignal(request)) {
+        return res.status(400).json({
+          message:
+            "Provide personId, phone, name, deviceId, accountId, locationId, caseId, or strongIdentifiers.",
+        });
+      }
+
+      const resolution = await resolvePersonEntity(request);
+
+      return res.status(200).json(
+        successResponse("Person resolved successfully", {
+          ...resolution,
+          // Retained for existing callers; consumers should use the explicit status.
+          matched: resolution.status === "MATCHED",
+        }),
+      );
+    } catch (error) {
+      console.error("Entity resolution error:", error);
+
+      return res.status(500).json({
+        message: "Entity resolution failed",
       });
     }
-
-    const resolution = await resolvePersonEntity(request);
-
-    return res.status(200).json({
-      ...resolution,
-      // Retained for existing callers; consumers should use the explicit status.
-      matched: resolution.status === "MATCHED",
-    });
-  } catch (error) {
-    console.error("Entity resolution error:", error);
-
-    return res.status(500).json({
-      message: "Entity resolution failed",
-    });
-  }
-};
+  },
+);
 
 /** @deprecated Use resolvePersonRequest for the explicit Phase 2 endpoint name. */
 export const resolvePerson = resolvePersonRequest;

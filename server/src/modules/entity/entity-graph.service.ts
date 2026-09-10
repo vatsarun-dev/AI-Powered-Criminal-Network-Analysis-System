@@ -1,4 +1,4 @@
 export {
   getGraphProjectionForEntity,
   syncEntityToGraph,
-} from "../../graph/entity-graph-projection.service.js";
+} from "./entity-graph-projection.service.js";

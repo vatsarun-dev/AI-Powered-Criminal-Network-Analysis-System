@@ -28,6 +28,9 @@ const Investigation = () => {
       setSelectedLocation(null);
       return;
     }
+   if (!entityId) {
+  return;
+}
 
     const loadConnections = async () => {
       try {
@@ -60,6 +63,12 @@ const Investigation = () => {
     .flatMap((connection) => [
       connection.source,
       connection.target,
+  const activeConnections = entityId ? connections : [];
+
+  const locations = activeConnections
+    .flatMap((item) => [
+      item.source,
+      item.target,
     ])
     .filter((node) => node?.labels?.includes("LOCATION"))
     .filter(
@@ -167,10 +176,11 @@ const Investigation = () => {
             <span>
               {connections.length} connections
             </span>
+            <span>{activeConnections.length} connections</span>
           </div>
 
           <Timeline
-            connections={connections}
+            connections={activeConnections}
             selectedEvent={selectedEvent}
             onEventSelect={handleEventSelect}
           />

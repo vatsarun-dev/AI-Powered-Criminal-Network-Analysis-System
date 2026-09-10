@@ -5,7 +5,7 @@ import {
   createGraphRelationship,
 } from "./graph.controller.js";
 
-import { resolvePersonRequest } from "./entityResolution.controller.js";
+import { resolvePersonRequest } from "../modules/entity/entityResolution.controller.js";
 import {
   caseNetwork,
   filteredGraph,
@@ -16,7 +16,7 @@ import {
   nodeConnections,
   personNetwork,
   shortestPath,
-} from "./graphQuery.controller.js";
+} from "../modules/graph/graphQuery.controller.js";
 
 import {
   degreeCentrality,

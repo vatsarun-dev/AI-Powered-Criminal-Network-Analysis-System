@@ -261,6 +261,30 @@ party-mention counts only, including missing-value totals. They must not be
 used for individual criminal-risk prediction, profiling, or decisions about a
 person.
 
+## Interactive Crime Map (Phase 7)
+
+The protected map API reads live MongoDB FIR records and never fabricates a
+location. Optional `districtCoordinates` and `policeStationCoordinates` are
+validated FIR fields (`latitude` and `longitude`); only records with stored,
+numeric coordinates appear as map points. FIRs without coordinates remain in
+the aggregate counts as `unlocatedCases`.
+
+- `GET /api/map/overview`
+- `GET /api/map/districts/:id`
+- `GET /api/map/police-stations/:id`
+
+The overview supports the FIR filters `q`, `firNumber`, `year`, `district`,
+`policeStation`, `crimeCategory`, `status`, `registrationDateFrom`,
+`registrationDateTo`, `incidentDateFrom`, and `incidentDateTo`, plus
+`groupBy=DISTRICT|POLICE_STATION`, `densityInterval=MONTH|YEAR`, and
+`dateField=INCIDENT_DATE|REGISTRATION_DATE`. It returns live concentration,
+filter options, and historical density. Location details add category/status
+breakdowns and recent matching FIRs.
+
+The client page at `/map` is responsive and interactive. Historical density
+is descriptive planning support only: it is not individual predictive policing
+and does not use religion or gender for map risk scoring.
+
 ## Example Request
 
 ```bash

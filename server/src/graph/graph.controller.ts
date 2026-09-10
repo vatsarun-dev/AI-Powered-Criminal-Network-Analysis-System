@@ -1,58 +1,61 @@
-import type { Request, Response } from "express";
+import type { RequestHandler } from "express";
 
-import { NODE_LABELS, RELATIONSHIP_TYPES } from "./graph.constants.js";
+import { NODE_LABELS, RELATIONSHIP_TYPES } from "../modules/graph/graph.constants.js";
+import {
+  createNode,
+  createRelationship,
+} from "../modules/graph/graph.service.js";
 
-import { createNode, createRelationship } from "./graph.service.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import { successResponse } from "../utils/ApiResponse.js";
 
-export const createGraphNode = async (req: Request, res: Response) => {
-  try {
+export const createGraphNode: RequestHandler = asyncHandler(
+  async (req, res) => {
     const { label, properties } = req.body;
 
     if (!NODE_LABELS.includes(label)) {
       return res.status(400).json({
+        success: false,
         message: "Invalid node label",
       });
     }
 
-    if (!properties || !properties.id) {
+    if (!properties?.id) {
       return res.status(400).json({
+        success: false,
         message: "Node properties must contain an id",
       });
     }
 
     const node = await createNode(label, properties);
 
-    return res.status(201).json({
-      message: "Node created successfully",
-      node,
-    });
-  } catch (error) {
-    console.error("Create node error:", error);
+    return res.status(201).json(
+      successResponse("Node created successfully", node),
+    );
+  },
+);
 
-    return res.status(500).json({
-      message: "Failed to create graph node",
-    });
-  }
-};
-
-export const createGraphRelationship = async (req: Request, res: Response) => {
-  try {
+export const createGraphRelationship: RequestHandler = asyncHandler(
+  async (req, res) => {
     const { from, relationship, to, properties } = req.body;
 
     if (!NODE_LABELS.includes(from?.label)) {
       return res.status(400).json({
+        success: false,
         message: "Invalid source node label",
       });
     }
 
     if (!NODE_LABELS.includes(to?.label)) {
       return res.status(400).json({
+        success: false,
         message: "Invalid target node label",
       });
     }
 
     if (!RELATIONSHIP_TYPES.includes(relationship)) {
       return res.status(400).json({
+        success: false,
         message: "Invalid relationship type",
       });
     }
@@ -66,15 +69,8 @@ export const createGraphRelationship = async (req: Request, res: Response) => {
       properties,
     );
 
-    return res.status(201).json({
-      message: "Relationship created successfully",
-      relationship: result,
-    });
-  } catch (error) {
-    console.error("Create relationship error:", error);
-
-    return res.status(500).json({
-      message: "Failed to create graph relationship",
-    });
-  }
-};
+    return res.status(201).json(
+      successResponse("Relationship created successfully", result),
+    );
+  },
+);

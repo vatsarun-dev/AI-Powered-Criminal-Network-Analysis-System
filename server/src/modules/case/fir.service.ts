@@ -3,7 +3,7 @@ import { FirModel, type FirMongoDocument } from "../../models/fir.model.js";
 import { FileModel } from "../../models/file.model.js";
 import { OCRResult } from "../../models/ocr-result.model.js";
 import { RelationshipEvidenceModel } from "../../models/relationship-evidence.model.js";
-import { getCaseNetwork, getGraphRelationships } from "../../graph/graphQuery.service.js";
+import { getCaseNetwork, getGraphRelationships } from "../graph/graphQuery.service.js";
 import {
   BadRequestError,
   ConflictError,
@@ -43,7 +43,11 @@ const toFirResponse = (fir: StoredFir): FirResponse => ({
   registrationDate: fir.registrationDate.toISOString(),
   ...(fir.incidentDate ? { incidentDate: fir.incidentDate.toISOString() } : {}),
   district: fir.district,
+  ...(fir.districtCoordinates ? { districtCoordinates: fir.districtCoordinates } : {}),
   policeStation: fir.policeStation,
+  ...(fir.policeStationCoordinates
+    ? { policeStationCoordinates: fir.policeStationCoordinates }
+    : {}),
   crimeCategory: fir.crimeCategory,
   sections: fir.sections,
   description: fir.description,

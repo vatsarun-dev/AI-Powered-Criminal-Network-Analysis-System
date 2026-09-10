@@ -3,8 +3,8 @@ import {
   getBetweennessCentrality,
   getDegreeCentrality,
   getLouvainCommunities,
-} from "../../graph/graphAnalytics.service.js";
-import { getShortestPath } from "../../graph/graphQuery.service.js";
+} from "../graph/graphAnalytics.service.js";
+import { getShortestPath } from "../graph/graphQuery.service.js";
 import { buildFirMongoFilter } from "../case/fir.service.js";
 import type { FirListFilter } from "../case/fir.types.js";
 import {

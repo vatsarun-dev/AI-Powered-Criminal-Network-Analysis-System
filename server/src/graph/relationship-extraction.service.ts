@@ -2,10 +2,10 @@ import { createHash } from "node:crypto";
 
 import type { EntityType } from "../types/entity.js";
 import { RelationshipEvidenceModel } from "../models/relationship-evidence.model.js";
-import { getEntityNodeLabel } from "./entity-node-labels.js";
-import { getGraphProjectionForEntity } from "./entity-graph-projection.service.js";
-import type { NodeLabel, RelationshipType } from "./graph.constants.js";
-import { createRelationship } from "./graph.service.js";
+import { getEntityNodeLabel } from "../modules/entity/entity-node-labels.js";
+import { getGraphProjectionForEntity } from "../modules/entity/entity-graph-projection.service.js";
+import type { NodeLabel, RelationshipType } from "../modules/graph/graph.constants.js";
+import { createRelationship } from "../modules/graph/graph.service.js";
 
 export const RELATIONSHIP_MODEL_VERSION = "relationship-rules-v1";
 

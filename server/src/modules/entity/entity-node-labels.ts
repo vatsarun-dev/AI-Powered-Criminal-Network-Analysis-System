@@ -1,5 +1,5 @@
-import type { EntityType } from "../types/entity.js";
-import type { NodeLabel } from "./graph.constants.js";
+import type { EntityType } from "../../types/entity.js";
+import type { NodeLabel } from "../graph/graph.constants.js";
 
 /**
  * Extracted FIR identifiers and case identifiers represent the same graph

@@ -1,85 +1,105 @@
+// Colors per node type — keep in sync with any legend UI
 export const typeColors = {
-  PERSON: "#6c63ff",
-  PHONE: "#ff6b6b",
-  DEVICE: "#feca57",
-  LOCATION: "#1dd1a1",
-  ACCOUNT: "#54a0ff",
+  PERSON: "#c8ff00",
+  PHONE: "#65d6ff",
+  DEVICE: "#fbbf24",
+  ACCOUNT: "#a78bfa",
+  LOCATION: "#34d399",
+  CASE: "#fb7185",
+  EVENT: "#fb923c",
+  COURT: "#e879f9",
+  POLICE_STATION: "#60a5fa",
+  CRIME_CATEGORY: "#facc15",
+  VEHICLE: "#94a3b8",
+  ORGANIZATION: "#2dd4bf",
+  UNKNOWN: "#94a3b8",
 };
 
 export const cytoscapeStylesheet = [
   {
     selector: "node",
     style: {
-      "background-color": (ele) => typeColors[ele.data("type")] || "#999",
+      "background-color": (element) => typeColors[element.data("type")] || typeColors.UNKNOWN,
       label: "data(label)",
-
-      // Light text so it's readable on the dark canvas background
-      color: "#e6edf3",
-      "font-size": 12,
-      "font-weight": 600,
-
-      // A subtle outline behind the text acts like a mini "label background",
-      // which is what actually prevents labels from blending into each other
-      // when nodes are close together.
-      "text-outline-color": "#0d1117",
-      "text-outline-width": 2,
-
+      color: "#f5f5f0",
+      "font-size": 9,
+      "font-family": "DM Mono, monospace",
       "text-valign": "bottom",
-      "text-margin-y": 8,
+      "text-margin-y": 6,
       "text-wrap": "wrap",
-      "text-max-width": "90px",
-
-      width: 42,
-      height: 42,
+      "text-max-width": 100,
+      width: 38,
+      height: 38,
       "border-width": 2,
-      "border-color": "#161b22",
+      "border-color": "#080808",
+      "overlay-opacity": 0,
     },
   },
   {
     selector: "edge",
     style: {
-      width: 1.5,
-      "line-color": "#30363d",
-      "target-arrow-color": "#30363d",
+      width: 1.4,
+      "line-color": "#64748b",
+      "target-arrow-color": "#64748b",
       "target-arrow-shape": "triangle",
-      "curve-style": "bezier",
-
+      "curve-style": "unbundled-bezier",
+      "control-point-distances": [24, -24],
+      "control-point-weights": [0.5, 0.5],
       label: "data(label)",
-      "font-size": 9,
-      color: "#8b949e",
-      "text-outline-color": "#0d1117",
-      "text-outline-width": 2,
+      "font-size": 7,
+      "font-family": "DM Mono, monospace",
+      color: "#cbd5e1",
       "text-rotation": "autorotate",
+      "text-background-color": "#111827",
+      "text-background-opacity": 0.85,
+      "text-background-padding": 2,
     },
+  },
+  {
+    selector: 'node[type = "CASE"]',
+    style: {
+      width: 58,
+      height: 58,
+      shape: "hexagon",
+      "border-width": 3,
+      "border-color": "#fecdd3",
+    },
+  },
+  {
+    selector: 'node[type = "LOCATION"], node[type = "POLICE_STATION"], node[type = "COURT"]',
+    style: { shape: "diamond" },
+  },
+  {
+    selector: 'node[type = "DEVICE"], node[type = "ACCOUNT"]',
+    style: { shape: "round-rectangle" },
   },
   {
     selector: "node:selected",
     style: {
-      "border-color": "#2f81f7",
+      "border-color": "#ffffff",
       "border-width": 4,
+      "underlay-color": "#c8ff00",
+      "underlay-opacity": 0.18,
+      "underlay-padding": 8,
     },
   },
   {
-    // Dim everything except the selected node's direct neighborhood
-    // (optional but makes exploration feel much more "impressive")
-    selector: "node.faded, edge.faded",
+    selector: "edge:selected",
     style: {
-      opacity: 0.15,
+      width: 3,
+      "line-color": "#c8ff00",
+      "target-arrow-color": "#c8ff00",
+      color: "#ffffff",
     },
   },
 ];
 
 export const cytoscapeLayout = {
-  name: "circle",
+  name: "cose",
   animate: true,
   fit: true,
-  padding: 120,
-
-  nodeRepulsion: 6000,
-  idealEdgeLength: 100,
-  nodeOverlap: 20,
-  avoidOverlap: true,
-  gravity: 0.5,
-  numIter: 2000,
-  randomize: true,
+  padding: 48,
+  nodeRepulsion: 9000,
+  idealEdgeLength: 150,
+  gravity: 0.45,
 };

@@ -1,0 +1,276 @@
+.landing {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  background: var(--bg);
+  color: var(--text);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-grid {
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    );
+
+  background-size: 120px 120px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    transparent 90%
+  );
+
+  pointer-events: none;
+}
+
+.landing-nav {
+  position: relative;
+  z-index: 5;
+
+  width: 100%;
+  padding: 28px 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid var(--border-light);
+}
+
+.landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+
+  background: var(--accent);
+  border-radius: 50%;
+
+  box-shadow: 0 0 15px rgba(200, 255, 0, 0.6);
+}
+
+.landing-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.nav-status {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.nav-enter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  transition:
+    color 0.3s ease,
+    gap 0.3s ease;
+}
+
+.nav-enter:hover {
+  color: var(--accent);
+  gap: 16px;
+}
+
+.landing-hero {
+  position: relative;
+  z-index: 2;
+
+  flex: 1;
+
+  width: min(1400px, calc(100% - 80px));
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 80px 0;
+}
+
+.landing-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-bottom: 35px;
+
+  color: var(--text-muted);
+
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.landing-eyebrow span {
+  color: var(--accent);
+}
+
+.landing-title {
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  font-size: clamp(4.5rem, 11vw, 10.5rem);
+  line-height: 0.82;
+
+  letter-spacing: -0.075em;
+  font-weight: 800;
+}
+
+.landing-title span {
+  display: block;
+}
+
+.title-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(245, 245, 240, 0.5);
+}
+
+.landing-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 40px;
+
+  margin-top: 70px;
+}
+
+.landing-description {
+  max-width: 500px;
+
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.landing-button {
+  min-width: 260px;
+
+  padding: 18px 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: 1px solid var(--border);
+
+  background: var(--surface);
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.landing-button:hover {
+  background: var(--accent);
+  color: var(--bg);
+
+  border-color: var(--accent);
+
+  transform: translateY(-4px);
+}
+
+.button-arrow {
+  font-size: 1.2rem;
+}
+
+.landing-footer {
+  position: relative;
+  z-index: 3;
+
+  width: min(1400px, calc(100% - 80px));
+  margin: 0 auto;
+
+  padding: 24px 0;
+
+  display: flex;
+  justify-content: space-between;
+
+  border-top: 1px solid var(--border-light);
+
+  color: var(--text-muted);
+
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 768px) {
+  .landing-nav {
+    padding: 22px 20px;
+  }
+
+  .landing-nav-right {
+    gap: 0;
+  }
+
+  .nav-status {
+    display: none;
+  }
+
+  .landing-hero {
+    width: calc(100% - 40px);
+    padding: 70px 0;
+  }
+
+  .landing-title {
+    font-size: clamp(3.8rem, 16vw, 7rem);
+  }
+
+  .landing-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 55px;
+  }
+
+  .landing-button {
+    width: 100%;
+  }
+
+  .landing-footer {
+    width: calc(100% - 40px);
+
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+}

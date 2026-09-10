@@ -1,6 +1,5 @@
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import "../../styles/dashboard.css";
 
 export default function DashboardShell({ children }) {
   return (

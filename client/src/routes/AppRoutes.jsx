@@ -1,3 +1,13 @@
+
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Landing from "../pages/Landing/Landing";
+import Auth from "../pages/Auth/Auth";
+import Dashboard from "../pages/Dashboard/Dashboard";
+import Investigation from "../pages/Investigation/Investigation";
+import Reports from "../pages/Reports/Reports";
+
+import ProtectedRoute from "../components/common/ProtectedRoute";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -14,7 +24,39 @@ const protectedPage = (page) => <ProtectedRoute>{page}</ProtectedRoute>;
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public */}
       <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+
+      {/* Protected */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/investigation"
+        element={
+          <ProtectedRoute>
+            <Investigation />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Reports />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Unknown route */}
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/dashboard" element={protectedPage(<Dashboard />)} />
@@ -25,3 +67,6 @@ export default function AppRoutes() {
     </Routes>
   );
 }
+
+export default AppRoutes;
+

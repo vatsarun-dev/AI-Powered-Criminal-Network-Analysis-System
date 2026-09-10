@@ -5,17 +5,20 @@ const TimelineItem = ({ event, active, onClick }) => {
     <button
       type="button"
       className={`timeline-item ${active ? "active" : ""}`}
-      onClick={() => onClick(event)}
+      onClick={() => onClick?.(event)}
     >
       <div className="timeline-dot" />
 
       <div className="timeline-content">
         <div className="timeline-time">
           <Clock3 size={14} />
-          {event.timestamp || "Unknown time"}
+
+          {event.timestamp
+            ? new Date(event.timestamp).toLocaleString()
+            : "TIME UNKNOWN"}
         </div>
 
-        <h4>{event.name || event.type || "Event"}</h4>
+        <h4>{event.name}</h4>
 
         {event.location && (
           <div className="timeline-location">

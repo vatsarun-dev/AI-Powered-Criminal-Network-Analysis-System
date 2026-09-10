@@ -9,8 +9,9 @@ export type NodeProvenance = {
   sourceValues?: string[];
 };
 
-const uniqueStrings = (values: string[] | undefined): string[] =>
-  [...new Set((values ?? []).filter((value) => value.trim().length > 0))];
+const uniqueStrings = (values: string[] | undefined): string[] => [
+  ...new Set((values ?? []).filter((value) => value.trim().length > 0)),
+];
 
 /**
  * Opens a Neo4j session, runs `work` against it, and guarantees the session
@@ -83,9 +84,7 @@ export const createRelationship = (
       typeof properties.evidenceId === "string" && properties.evidenceId
         ? properties.evidenceId
         : undefined;
-    const relationshipIdentity = evidenceId
-      ? " {evidenceId: $evidenceId}"
-      : "";
+    const relationshipIdentity = evidenceId ? " {evidenceId: $evidenceId}" : "";
     const query = `
       MATCH (from:${fromLabel} {id: $fromId})
       MATCH (to:${toLabel} {id: $toId})

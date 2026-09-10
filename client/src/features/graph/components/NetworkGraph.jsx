@@ -89,7 +89,7 @@ function NetworkGraph({
 
         const response = await searchGraph(searchTerm);
 
-        const nodes = response?.data ?? [];
+        const nodes = response ?? [];
 
         const filteredNodes =
           activeFilter === "ALL"

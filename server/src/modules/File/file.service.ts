@@ -4,12 +4,13 @@ import { FileType, File } from "../../types/file.js";
 import { FileModel } from "../../models/file.model.js";
 import { FileResponse } from "../../types/Response.js";
 import { extractTextFromPdf } from "../../service/pdf-ocr.service.js";
+import { BadRequestError } from "../../shared/error/globalError.js";
+import { ingestTelecomCsv } from "./telecom-ingestion.service.js";
 
-interface FileReturnType {
-  file: Express.Multer.File;
-  type: "FIR" | "CDR" | "IPDR";
-  caseId: string;
-}
+const supportedFileTypes = new Set<string>(Object.values(FileType));
+
+const expectedExtension = (type: FileType): string =>
+  type === FileType.FIR ? ".pdf" : ".csv";
 
 export default class FileService {
   private response(uploadedFile: File): FileResponse {
@@ -29,7 +30,14 @@ export default class FileService {
   caseId: string,
 ): Promise<FileResponse> {
     if (!file || !type || !caseId) {
-      throw new Error("all fields are required");
+      throw new BadRequestError("file, type, and caseId are required");
+    }
+    if (!supportedFileTypes.has(type)) {
+      throw new BadRequestError("type must be FIR, CDR, or IPDR");
+    }
+    const documentType = type as FileType;
+    if (path.extname(file.originalname).toLowerCase() !== expectedExtension(documentType)) {
+      throw new BadRequestError(`${documentType} uploads must use ${expectedExtension(documentType)} files`);
     }
 
     const uploadedFile = await FileModel.create({
@@ -37,7 +45,7 @@ export default class FileService {
       storedName: file.filename,
       mimeType: file.mimetype,
       size: Number(file.size ?? 0),
-      type,
+      type: documentType,
       caseId,
       storagePath: file.path,
       status: "UPLOADED",
@@ -46,7 +54,7 @@ export default class FileService {
     /*
      * OCR is currently required only for FIR/PDF files.
      */
-    if (type === "FIR" && file.mimetype === "application/pdf") {
+    if (documentType === FileType.FIR) {
       await FileModel.findByIdAndUpdate(uploadedFile._id, {
         status: "PROCESSING",
       });
@@ -68,6 +76,20 @@ export default class FileService {
           status: "FAILED",
         });
 
+        throw error;
+      }
+    } else {
+      await FileModel.findByIdAndUpdate(uploadedFile._id, { status: "PROCESSING" });
+      try {
+        await ingestTelecomCsv({
+          sourceDocumentId: uploadedFile._id.toString(),
+          caseId,
+          type: documentType,
+          filePath: file.path,
+        });
+        await FileModel.findByIdAndUpdate(uploadedFile._id, { status: "PROCESSED" });
+      } catch (error) {
+        await FileModel.findByIdAndUpdate(uploadedFile._id, { status: "FAILED" });
         throw error;
       }
     }

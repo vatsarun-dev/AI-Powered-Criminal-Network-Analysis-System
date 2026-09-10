@@ -89,6 +89,7 @@ export const normalizeEntityValue = (
     case "ORGANIZATION":
     case "COURT":
     case "CRIME_CATEGORY":
+    case "EVENT":
       return normalizeText(value);
   }
 };

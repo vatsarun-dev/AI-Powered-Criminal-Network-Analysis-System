@@ -82,6 +82,8 @@ function NetworkGraph({
  
 
   useEffect(() => {
+    let ignoreResponse = false;
+
     const loadGraph = async () => {
       try {
         setLoading(true);
@@ -104,32 +106,45 @@ function NetworkGraph({
           },
         }));
 
-        setElements(graphNodes);
+        if (!ignoreResponse) {
+          setElements(graphNodes);
+        }
       } catch (err) {
         console.error("Graph search failed:", err);
 
-        setError(
-          err?.response?.data?.message ||
-            "Unable to load graph data"
-        );
+        if (!ignoreResponse) {
+          setError(
+            err?.response?.data?.message ||
+              "Unable to load graph data"
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!ignoreResponse) {
+          setLoading(false);
+        }
       }
     };
 
     if (searchTerm?.trim()) {
       loadGraph();
     }
-  },[searchTerm, activeFilter]);
+
+    return () => {
+      ignoreResponse = true;
+    };
+  }, [searchTerm, activeFilter]);
 
   useEffect(() => {
-    if (!cyRef.current || elements.length === 0) {
+    const cy = cyRef.current;
+
+    // A request can cause a React render while Cytoscape is unmounting.  Do
+    // not ask a destroyed instance to lay itself out: it no longer has a
+    // renderer, which causes Cytoscape's internal `notify` error.
+    if (!cy || cy.destroyed() || elements.length === 0) {
       return;
     }
 
-    const cy = cyRef.current;
-
-    cy.layout({
+    const layout = cy.layout({
       name: "cose",
       animate: true,
       animationDuration: 700,
@@ -138,31 +153,33 @@ function NetworkGraph({
       nodeRepulsion: 8000,
       idealEdgeLength: 130,
       gravity: 0.5,
-    }).run();
-const handleNodeTap = (event) => {
-  const node = event.target;
+    });
 
-  const selected = {
-    id: node.id(),
-    label: node.data("label"),
-    type: node.data("type"),
-  };
+    const handleNodeTap = (event) => {
+      const node = event.target;
 
-  setSelectedNode(selected);
-  onNodeSelect?.(selected);
-};
+      const selected = {
+        id: node.id(),
+        label: node.data("label"),
+        type: node.data("type"),
+      };
+
+      setSelectedNode(selected);
+      onNodeSelect?.(selected);
+    };
+
     cy.on("tap", "node", handleNodeTap);
+    layout.run();
 
     return () => {
-      cy.removeListener(
-        "tap",
-        "node",
-        handleNodeTap
-      );
+      if (!cy.destroyed()) {
+        cy.removeListener("tap", "node", handleNodeTap);
+        layout.stop();
+      }
     };
   }, [elements, onNodeSelect]);
 
-  if (loading) {
+  if (loading && elements.length === 0) {
     return (
       <div className="graph-state">
         <span className="mono">
@@ -192,43 +209,44 @@ const handleNodeTap = (event) => {
     );
   }
 
-return (
-  <div className="network-graph-container">
-    <div className="network-graph">
-      <CytoscapeComponent
-        elements={elements}
-        stylesheet={stylesheet}
-        cy={(cy) => {
-          cyRef.current = cy;
-        }}
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "block",
-        }}
-      />
-    </div>
-
-    {selectedNode && (
-      <div className="node-details">
-        <div className="node-details-label mono">
-          SELECTED ENTITY
-        </div>
-
-        <h3>{selectedNode.label}</h3>
-
-        <span className="node-type mono">
-          {selectedNode.type}
-        </span>
-
-        <div className="node-detail-row">
-          <span>ID</span>
-          <strong>{selectedNode.id}</strong>
-        </div>
+  return (
+    <div className="network-graph-container">
+      <div className="network-graph">
+        <CytoscapeComponent
+          elements={elements}
+          stylesheet={stylesheet}
+          cy={(cy) => {
+            cyRef.current = cy;
+          }}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+          }}
+        />
+        {loading && <div className="graph-state">UPDATING NETWORK...</div>}
       </div>
-    )}
-  </div>
-);
+
+      {selectedNode && (
+        <div className="node-details">
+          <div className="node-details-label mono">
+            SELECTED ENTITY
+          </div>
+
+          <h3>{selectedNode.label}</h3>
+
+          <span className="node-type mono">
+            {selectedNode.type}
+          </span>
+
+          <div className="node-detail-row">
+            <span>ID</span>
+            <strong>{selectedNode.id}</strong>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default NetworkGraph;

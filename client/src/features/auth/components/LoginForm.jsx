@@ -4,7 +4,7 @@ import { loginUser } from "../api";
 import useAuthStore from "../../../store/authStore";
 import "../../../styles/authLogin.css";
 
-export default function LoginForm() {
+export default function LoginForm({ onSwitchToRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -91,7 +91,7 @@ export default function LoginForm() {
 
         <button
           type="button"
-          onClick={() => navigate("/register")}
+          onClick={onSwitchToRegister}
           className="auth-secondary-button"
         >
           Create an account

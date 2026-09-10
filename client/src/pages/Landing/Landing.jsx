@@ -130,7 +130,7 @@ function Landing() {
 
           <Link
             ref={buttonRef}
-            to="/dashboard"
+            to="/auth"
             className="landing-button"
           >
             <span>ENTER INTELLIGENCE SYSTEM</span>

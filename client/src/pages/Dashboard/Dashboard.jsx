@@ -102,7 +102,7 @@ function Dashboard() {
             </Link>
 
             <Link
-              to="/investigation"
+              to="/reports"
               className="sidebar-link"
             >
               <Bell size={16} />
@@ -110,7 +110,7 @@ function Dashboard() {
             </Link>
 
             <Link
-              to="/investigation"
+              to="/reports"
               className="sidebar-link"
             >
               <FileText size={16} />

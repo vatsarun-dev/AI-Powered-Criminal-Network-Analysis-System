@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api";
-import useAuthStore from "../../../store/authStore";
+
 import "../../../styles/authLogin.css";
 
-export default function RegisterForm() {
+export default function RegisterForm({ onSwitchToLogin }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +12,7 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const login = useAuthStore((state) => state.login);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,15 +21,14 @@ export default function RegisterForm() {
     setLoading(true);
 
     try {
-      const { user } = await registerUser({
-        name,
-        email,
-        password,
-        role,
-      });
+     await registerUser({
+  name,
+  email,
+  password,
+  role,
+});
 
-      login(user);
-      navigate("/dashboard");
+navigate("/login");
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -130,7 +129,7 @@ export default function RegisterForm() {
 
         <button
           type="button"
-          onClick={() => navigate("/login")}
+          onClick={onSwitchToLogin}
           className="auth-secondary-button"
         >
           Sign in

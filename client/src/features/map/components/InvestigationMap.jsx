@@ -6,8 +6,22 @@ import {
   Popup,
   useMap,
 } from "react-leaflet";
+import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
+
+const createMarkerIcon = (selected = false) =>
+  L.divIcon({
+    className: "investigation-marker-wrapper",
+    html: `
+      <div class="investigation-marker ${selected ? "selected" : ""}">
+        <span></span>
+      </div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -14],
+  });
 
 const MapFocus = ({ selectedLocation }) => {
   const map = useMap();
@@ -20,7 +34,9 @@ const MapFocus = ({ selectedLocation }) => {
       map.flyTo(
         [selectedLocation.latitude, selectedLocation.longitude],
         15,
-        { duration: 1 }
+        {
+          duration: 0.8,
+        }
       );
     }
   }, [selectedLocation, map]);
@@ -61,24 +77,44 @@ const InvestigationMap = ({
         );
 
         if (
-          Number.isNaN(latitude) ||
-          Number.isNaN(longitude)
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude)
         ) {
           return null;
         }
+
+        const isSelected =
+          selectedLocation?.id === location.id;
+
+        const locationName =
+          location.properties?.name ||
+          location.properties?.location_name ||
+          "Unknown Location";
 
         return (
           <Marker
             key={location.id}
             position={[latitude, longitude]}
+            icon={createMarkerIcon(isSelected)}
             eventHandlers={{
-              click: () => onLocationSelect?.(location),
+              click: () => {
+                onLocationSelect?.(location);
+              },
             }}
           >
-            <Popup>
-              <strong>
-                {location.properties?.name || "Location"}
-              </strong>
+            <Popup className="investigation-popup">
+              <div className="map-popup">
+                <span className="map-popup-label">
+                  LOCATION
+                </span>
+
+                <strong>{locationName}</strong>
+
+                <div className="map-popup-coordinates">
+                  {latitude.toFixed(5)},{" "}
+                  {longitude.toFixed(5)}
+                </div>
+              </div>
             </Popup>
           </Marker>
         );

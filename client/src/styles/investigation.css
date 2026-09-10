@@ -1,0 +1,421 @@
+/* ================================
+   INVESTIGATION PAGE
+================================ */
+
+.investigation-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #080808;
+  color: #f5f5f0;
+}
+
+.investigation-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.investigation-header .eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #c8ff00;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.investigation-header h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 0.95;
+  font-weight: 600;
+}
+
+.selected-investigation-entity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-family: "DM Mono", monospace;
+  font-size: 12px;
+}
+
+.selected-investigation-entity span {
+  padding: 5px 8px;
+  border: 1px solid #c8ff00;
+  color: #c8ff00;
+}
+
+.selected-investigation-entity strong {
+  color: #aaa;
+}
+
+
+/* ================================
+   MAIN GRID
+================================ */
+
+.investigation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 18px;
+}
+
+.investigation-panel {
+  min-height: 620px;
+  overflow: hidden;
+  border: 1px solid #222;
+  background: #0d0d0d;
+}
+
+.panel-header {
+  height: 82px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #222;
+}
+
+.panel-header h2 {
+  margin: 5px 0 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.panel-header span {
+  color: #777;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+}
+
+
+/* ================================
+   TIMELINE
+================================ */
+
+.timeline {
+  position: relative;
+  height: calc(620px - 82px);
+  padding: 28px 24px 40px 34px;
+  overflow-y: auto;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 30px;
+  bottom: 40px;
+  left: 47px;
+  width: 1px;
+  background: #292929;
+}
+
+.timeline-item {
+  position: relative;
+  width: 100%;
+  min-height: 100px;
+  padding: 0 0 26px 42px;
+  display: block;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.timeline-dot {
+  position: absolute;
+  top: 5px;
+  left: 9px;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #555;
+  border-radius: 50%;
+  background: #0d0d0d;
+  transition: 0.2s ease;
+}
+
+.timeline-item:hover .timeline-dot,
+.timeline-item.active .timeline-dot {
+  border-color: #c8ff00;
+  background: #c8ff00;
+  box-shadow: 0 0 14px rgba(200, 255, 0, 0.35);
+}
+
+.timeline-content {
+  padding: 15px 17px;
+  border: 1px solid transparent;
+  background: #111;
+  transition: 0.2s ease;
+}
+
+.timeline-item:hover .timeline-content {
+  border-color: #2b2b2b;
+  transform: translateX(3px);
+}
+
+.timeline-item.active .timeline-content {
+  border-color: #c8ff00;
+}
+
+.timeline-time {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: #c8ff00;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.timeline-content h4 {
+  margin: 0 0 8px;
+  color: #f5f5f0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.timeline-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #777;
+  font-size: 12px;
+}
+
+.timeline-empty {
+  height: calc(620px - 82px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+
+/* ================================
+   MAP
+================================ */
+
+.map-panel {
+  position: relative;
+}
+
+.investigation-map {
+  width: 100%;
+  height: calc(620px - 82px);
+  background: #111;
+}
+
+/* Darken Leaflet map to match CrimeGraph */
+.investigation-map .leaflet-tile {
+  filter: brightness(0.45) contrast(1.1) saturate(0.5);
+}
+
+.investigation-map .leaflet-control-zoom {
+  border: 1px solid #333 !important;
+}
+
+.investigation-map .leaflet-control-zoom a {
+  background: #111;
+  color: #c8ff00;
+  border-color: #333;
+}
+
+.investigation-map .leaflet-control-zoom a:hover {
+  background: #1b1b1b;
+  color: #c8ff00;
+}
+
+.investigation-map .leaflet-control-attribution {
+  background: rgba(8, 8, 8, 0.8);
+  color: #666;
+}
+
+.investigation-map .leaflet-control-attribution a {
+  color: #888;
+}
+
+
+/* ================================
+   SCROLLBAR
+================================ */
+
+.timeline::-webkit-scrollbar {
+  width: 4px;
+}
+
+.timeline::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+
+.timeline::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+.timeline::-webkit-scrollbar-thumb:hover {
+  background: #c8ff00;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1000px) {
+  .investigation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .investigation-panel {
+    min-height: 520px;
+  }
+
+  .timeline,
+  .timeline-empty,
+  .investigation-map {
+    height: 438px;
+  }
+}
+
+@media (max-width: 600px) {
+  .investigation-page {
+    padding: 18px;
+  }
+
+  .investigation-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .investigation-panel {
+    min-height: 450px;
+  }
+
+  .panel-header {
+    padding: 16px;
+  }
+
+  .timeline {
+    padding-left: 18px;
+  }
+
+  .timeline::before {
+    left: 31px;
+  }
+
+  .timeline-item {
+    padding-left: 32px;
+  }
+
+  .timeline-dot {
+    left: 1px;
+  }
+
+  .timeline,
+  .timeline-empty,
+  .investigation-map {
+    height: 368px;
+  }
+}
+/* =========================
+   MAP MARKERS
+========================= */
+
+.investigation-marker-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.investigation-marker {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(200, 255, 0, 0.65);
+  border-radius: 50%;
+  background: rgba(200, 255, 0, 0.12);
+  box-shadow:
+    0 0 0 4px rgba(200, 255, 0, 0.06),
+    0 0 18px rgba(200, 255, 0, 0.25);
+  transition: 0.25s ease;
+}
+
+.investigation-marker span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c8ff00;
+  box-shadow: 0 0 10px rgba(200, 255, 0, 0.9);
+}
+
+.investigation-marker:hover {
+  transform: scale(1.25);
+}
+
+.investigation-marker.selected {
+  transform: scale(1.35);
+  border-color: #ffffff;
+  background: rgba(200, 255, 0, 0.2);
+  box-shadow:
+    0 0 0 6px rgba(200, 255, 0, 0.08),
+    0 0 28px rgba(200, 255, 0, 0.55);
+}
+
+
+/* =========================
+   MAP POPUP
+========================= */
+
+.investigation-map .leaflet-popup-content-wrapper,
+.investigation-map .leaflet-popup-tip {
+  background: #101010;
+  color: #f5f5f0;
+}
+
+.investigation-map .leaflet-popup-content {
+  margin: 14px 16px;
+}
+
+.map-popup {
+  min-width: 150px;
+}
+
+.map-popup-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #c8ff00;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.map-popup strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.map-popup-coordinates {
+  color: #666;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+}
+
+.investigation-map .leaflet-popup-close-button {
+  color: #777 !important;
+}
+
+.investigation-map .leaflet-popup-close-button:hover {
+  color: #c8ff00 !important;
+}

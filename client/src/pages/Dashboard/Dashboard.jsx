@@ -59,7 +59,7 @@ function Dashboard() {
             </Link>
 
             <Link
-              to="/investigation"
+              to="/graph"
               className="sidebar-link"
             >
               <GitBranch size={16} />
@@ -306,7 +306,7 @@ function Dashboard() {
               </div>
 
               <Link
-                to="/investigation"
+                to="/graph"
                 className="panel-action"
               >
                 OPEN GRAPH →

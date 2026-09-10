@@ -1,22 +1,10 @@
+/* ===== Shell layout ===== */
 .dashboard-shell {
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  background: #1e1e2f;
-  color: #fff;
-}
-
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .dashboard-body {
@@ -25,35 +13,90 @@
   overflow: hidden;
 }
 
+.dashboard-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.navbar-user {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.navbar-right button {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s ease;
+}
+
+.navbar-right button:hover {
+  background: var(--accent-danger);
+  border-color: var(--accent-danger);
+  color: #fff;
+}
+
+/* ===== Sidebar ===== */
 .sidebar {
   width: 220px;
-  background: #f4f4f8;
-  border-right: 1px solid #ddd;
-  padding: 1rem 0;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  padding: var(--spacing-md);
 }
 
 .sidebar ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.sidebar li a {
+.sidebar a {
   display: block;
-  padding: 0.75rem 1.5rem;
-  color: #333;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
   text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.sidebar li a.active,
-.sidebar li a:hover {
-  background: #e0e0f0;
-  font-weight: 600;
+.sidebar a:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
-.dashboard-content {
-  flex: 1;
-  padding: 1.5rem;
-  overflow-y: auto;
-  background: #fafafa;
+.sidebar a.active {
+  background: var(--accent-primary);
+  color: #fff;
 }

@@ -1,0 +1,23 @@
+:root {
+  /* Base */
+  --bg-primary: #0d1117;      /* deep dark background */
+  --bg-secondary: #161b22;    /* card/panel background */
+  --bg-tertiary: #21262d;     /* hover states */
+  --border-color: #30363d;
+
+  /* Text */
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+
+  /* Accent (investigation/alert feel) */
+  --accent-primary: #2f81f7;   /* links, primary actions - blue */
+  --accent-danger: #f85149;    /* high-priority alerts - red */
+  --accent-warning: #d29922;   /* medium alerts - amber */
+  --accent-success: #3fb950;   /* resolved/verified - green */
+
+  /* Spacing */
+  --radius: 6px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+}

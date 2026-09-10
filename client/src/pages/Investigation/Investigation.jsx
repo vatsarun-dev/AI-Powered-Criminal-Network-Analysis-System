@@ -56,15 +56,11 @@ const Investigation = () => {
     loadConnections();
   }, [entityId]);
 
+  const activeConnections = entityId ? connections : [];
+
   /*
    * Extract unique LOCATION nodes from graph connections
    */
-  const locations = connections
-    .flatMap((connection) => [
-      connection.source,
-      connection.target,
-  const activeConnections = entityId ? connections : [];
-
   const locations = activeConnections
     .flatMap((item) => [
       item.source,

@@ -214,3 +214,236 @@
     flex-direction: column;
   }
 }
+.fir-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+.fir-selector label {
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+}
+
+.fir-selector select {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #111;
+  color: inherit;
+  font-family: inherit;
+  outline: none;
+}
+
+.fir-selector select:focus {
+  border-color: rgba(180, 255, 70, 0.7);
+}
+
+.report-details {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.report-details div {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.report-details span {
+  display: block;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  opacity: 0.5;
+  margin-bottom: 5px;
+}
+
+.report-details strong {
+  font-size: 13px;
+}
+.report-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.report-stats div {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.report-stats span {
+  display: block;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  opacity: 0.5;
+  margin-bottom: 6px;
+}
+
+.report-stats strong {
+  font-size: 18px;
+}
+
+/* =========================
+   REPORT ACTIONS
+========================= */
+
+.report-action-btn {
+  justify-content: center;
+  margin-top: 6px;
+  min-width: 150px;
+  transition: all 0.2s ease;
+}
+
+.report-action-btn:hover,
+.generate-report-btn:hover {
+  background: transparent;
+  color: #c8ff00;
+}
+
+
+/* =========================
+   REPORT STATS
+========================= */
+
+.report-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.report-stats div {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #111;
+  text-align: left;
+}
+
+.report-stats span {
+  display: block;
+  margin-bottom: 6px;
+  color: #666;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.report-stats strong {
+  color: #ddd;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+
+/* =========================
+   FIR SELECTOR
+========================= */
+
+.fir-selector {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  max-width: 420px;
+}
+
+.fir-selector label {
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #777;
+}
+
+.fir-selector select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #222;
+  border-radius: 8px;
+  background: #111;
+  color: #ddd;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.fir-selector select:hover {
+  border-color: #333;
+}
+
+.fir-selector select:focus {
+  border-color: #c8ff00;
+}
+
+
+/* =========================
+   FIR DETAILS
+========================= */
+
+.report-details {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+  text-align: left;
+}
+
+.report-details div {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: #111;
+}
+
+.report-details span {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.report-details strong {
+  color: #ddd;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+  .report-details,
+  .report-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .fir-selector {
+    max-width: 100%;
+  }
+
+  .report-action-btn {
+    width: 100%;
+  }
+}
+

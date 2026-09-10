@@ -1,7 +1,14 @@
+
 import { Bell } from "lucide-react";
+
 import AlertItem from "./AlertItem";
 
-const AlertsPanel = ({ alerts = [] }) => {
+const AlertsPanel = ({
+  alerts = [],
+  onAcknowledge,
+  onDismiss,
+  updatingAlertId,
+}) => {
   return (
     <section className="reports-panel alerts-panel">
       <div className="reports-panel-header">
@@ -28,8 +35,13 @@ const AlertsPanel = ({ alerts = [] }) => {
         ) : (
           alerts.map((alert) => (
             <AlertItem
-              key={alert.id}
+              key={alert.alertId}
               alert={alert}
+              onAcknowledge={onAcknowledge}
+              onDismiss={onDismiss}
+              updating={
+                updatingAlertId === alert.alertId
+              }
             />
           ))
         )}

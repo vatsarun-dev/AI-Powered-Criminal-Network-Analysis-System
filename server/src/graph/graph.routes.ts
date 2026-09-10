@@ -5,7 +5,18 @@ import {
   createGraphRelationship,
 } from "./graph.controller.js";
 
-import { resolvePerson } from "./entityResolution.controller.js";
+import { resolvePersonRequest } from "../modules/entity/entityResolution.controller.js";
+import {
+  caseNetwork,
+  filteredGraph,
+  getNeighbors,
+  getNode,
+  listRelationships,
+  searchNodes,
+  nodeConnections,
+  personNetwork,
+  shortestPath,
+} from "../modules/graph/graphQuery.controller.js";
 
 import {
   degreeCentrality,
@@ -19,12 +30,24 @@ router.post("/nodes", createGraphNode);
 
 router.post("/relationships", createGraphRelationship);
 
-router.post("/resolve", resolvePerson);
+router.post("/resolve", resolvePersonRequest);
+
+router.get("/nodes/:id/neighbors", getNeighbors);
+router.get("/nodes/:id", getNode);
+router.get("/relationships", listRelationships);
+router.get("/cases/:id/network", caseNetwork);
+router.get("/persons/:id/network", personNetwork);
+router.get("/filtered", filteredGraph);
 
 router.get("/analytics/centrality", degreeCentrality);
 
 router.get("/analytics/betweenness", betweennessCentrality);
 
 router.get("/analytics/communities", louvainCommunities);
+router.get("/search", searchNodes);
+
+router.get("/connections/:id", nodeConnections);
+
+router.get("/shortest-path", shortestPath);
 
 export default router;

@@ -15,16 +15,28 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
-  const allowedTypes = ["application/pdf", "text/csv"];
+// const fileFilter: NonNullable<multer.Options["fileFilter"]> = (_req, file, cb) => {
+//   const allowedTypes = ["application/pdf", "text/csv"];
 
-  if (!allowedTypes.includes(file.mimetype)) {
-    return cb(new Error("Only PDF and CSV files are allowed"));
+//   if (!allowedTypes.includes(file.mimetype)) {
+//     return cb(new Error("Only PDF and CSV files are allowed"));
+//   }
+
+//   cb(null, true);
+// };
+const fileFilter: NonNullable<multer.Options["fileFilter"]> = (
+  _req,
+  file,
+  cb
+) => {
+  const extension = path.extname(file.originalname).toLowerCase();
+
+  if (extension === ".pdf" || extension === ".csv") {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF and CSV files are allowed"));
   }
-
-  cb(null, true);
 };
-
 export const upload = multer({
   storage,
   fileFilter,

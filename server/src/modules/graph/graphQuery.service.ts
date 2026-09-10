@@ -1,9 +1,9 @@
 import {
   neo4jDriver,
   neo4jDatabase,
-} from "../config/neo4j.js";
+} from "../../config/neo4j.js";
 import neo4j from "neo4j-driver";
-import type { Node, Relationship } from "neo4j-driver";
+import type { Node, Relationship, Session } from "neo4j-driver";
 
 import type { NodeLabel, RelationshipType } from "./graph.constants.js";
 
@@ -106,29 +106,40 @@ const buildNetworkFromRelationshipRecords = (
   };
 };
 
-export const searchGraphNodes = async (search: string) => {
-  const session = neo4jDriver.session({
-    database: neo4jDatabase,
-  });
-
+/**
+ * Opens a Neo4j session, runs `work` against it, and guarantees the session
+ * is closed afterwards — even if `work` throws. Centralizes the
+ * open -> try -> finally-close pattern that every query function needs.
+ */
+const withSession = async <T>(
+  work: (session: Session) => Promise<T>,
+): Promise<T> => {
+  const session = neo4jDriver.session({ database: neo4jDatabase });
   try {
-    const query = `
-      MATCH (n)
-      WHERE
-        toLower(coalesce(n.id, "")) CONTAINS toLower($search)
-        OR toLower(coalesce(n.name, "")) CONTAINS toLower($search)
-      RETURN
-        n.id AS id,
-        labels(n) AS labels,
-        n.name AS name,
-        properties(n) AS properties
-      ORDER BY name
-      LIMIT 50
-    `;
+    return await work(session);
+  } finally {
+    await session.close();
+  }
+};
 
-    const result = await session.run(query, {
-      search,
-    });
+export const searchGraphNodes = (search: string) =>
+  withSession(async (session) => {
+    const result = await session.run(
+      `
+        MATCH (n)
+        WHERE
+          toLower(coalesce(n.id, "")) CONTAINS toLower($search)
+          OR toLower(coalesce(n.name, "")) CONTAINS toLower($search)
+        RETURN
+          n.id AS id,
+          labels(n) AS labels,
+          n.name AS name,
+          properties(n) AS properties
+        ORDER BY name
+        LIMIT 50
+      `,
+      { search },
+    );
 
     return result.records.map((record) => ({
       id: record.get("id"),
@@ -136,33 +147,25 @@ export const searchGraphNodes = async (search: string) => {
       name: record.get("name"),
       properties: record.get("properties"),
     }));
-  } finally {
-    await session.close();
-  }
-};
-
-export const getNodeConnections = async (id: string) => {
-  const session = neo4jDriver.session({
-    database: neo4jDatabase,
   });
 
-  try {
-    const query = `
-      MATCH (source {id: $id})-[r]-(target)
-      RETURN
-        source.id AS sourceId,
-        labels(source) AS sourceLabels,
-        type(r) AS relationship,
-        properties(r) AS relationshipProperties,
-        target.id AS targetId,
-        labels(target) AS targetLabels,
-        target.name AS targetName,
-        properties(target) AS targetProperties
-    `;
-
-    const result = await session.run(query, {
-      id,
-    });
+export const getNodeConnections = (id: string) =>
+  withSession(async (session) => {
+    const result = await session.run(
+      `
+        MATCH (source {id: $id})-[r]-(target)
+        RETURN
+          source.id AS sourceId,
+          labels(source) AS sourceLabels,
+          type(r) AS relationship,
+          properties(r) AS relationshipProperties,
+          target.id AS targetId,
+          labels(target) AS targetLabels,
+          target.name AS targetName,
+          properties(target) AS targetProperties
+      `,
+      { id },
+    );
 
     return result.records.map((record) => ({
       source: {
@@ -180,43 +183,31 @@ export const getNodeConnections = async (id: string) => {
         properties: record.get("targetProperties"),
       },
     }));
-  } finally {
-    await session.close();
-  }
-};
-
-export const getShortestPath = async (
-  from: string,
-  to: string
-) => {
-  const session = neo4jDriver.session({
-    database: neo4jDatabase,
   });
 
-  try {
-    const query = `
-      MATCH (source {id: $from})
-      MATCH (target {id: $to})
-      MATCH path = shortestPath(
-        (source)-[*1..10]-(target)
-      )
-      RETURN
-        [node IN nodes(path) | {
-          id: node.id,
-          labels: labels(node),
-          name: node.name
-        }] AS nodes,
-        [rel IN relationships(path) | {
-          type: type(rel),
-          properties: properties(rel)
-        }] AS relationships,
-        length(path) AS hops
-    `;
-
-    const result = await session.run(query, {
-      from,
-      to,
-    });
+export const getShortestPath = (from: string, to: string) =>
+  withSession(async (session) => {
+    const result = await session.run(
+      `
+        MATCH (source {id: $from})
+        MATCH (target {id: $to})
+        MATCH path = shortestPath(
+          (source)-[*1..10]-(target)
+        )
+        RETURN
+          [node IN nodes(path) | {
+            id: node.id,
+            labels: labels(node),
+            name: node.name
+          }] AS nodes,
+          [rel IN relationships(path) | {
+            type: type(rel),
+            properties: properties(rel)
+          }] AS relationships,
+          length(path) AS hops
+      `,
+      { from, to },
+    );
 
     if (result.records.length === 0) {
       return null;
@@ -229,15 +220,10 @@ export const getShortestPath = async (
       relationships: serializeGraphValue(record.get("relationships")),
       hops: toNumber(record.get("hops")),
     };
-  } finally {
-    await session.close();
-  }
-};
+  });
 
-export const getGraphNode = async (id: string): Promise<GraphNodeView | null> => {
-  const session = neo4jDriver.session({ database: neo4jDatabase });
-
-  try {
+export const getGraphNode = (id: string): Promise<GraphNodeView | null> =>
+  withSession(async (session) => {
     const result = await session.run(
       "MATCH (node {id: $id}) RETURN node LIMIT 1",
       { id },
@@ -245,17 +231,12 @@ export const getGraphNode = async (id: string): Promise<GraphNodeView | null> =>
     const node = result.records[0]?.get("node") as Node | undefined;
 
     return node ? toGraphNodeView(node) : null;
-  } finally {
-    await session.close();
-  }
-};
+  });
 
-export const getGraphNeighbors = async (
+export const getGraphNeighbors = (
   id: string,
-): Promise<{ node: GraphNodeView; network: GraphNetwork }> => {
-  const session = neo4jDriver.session({ database: neo4jDatabase });
-
-  try {
+): Promise<{ node: GraphNodeView; network: GraphNetwork }> =>
+  withSession(async (session) => {
     const rootResult = await session.run(
       "MATCH (node {id: $id}) RETURN node LIMIT 1",
       { id },
@@ -281,18 +262,14 @@ export const getGraphNeighbors = async (
     }
 
     return { node: rootView, network };
-  } finally {
-    await session.close();
-  }
-};
+  });
 
-export const getGraphRelationships = async (
+export const getGraphRelationships = (
   filter: GraphFilter = {},
-): Promise<GraphNetwork> => {
-  const session = neo4jDriver.session({ database: neo4jDatabase });
-  const limit = Math.min(Math.max(filter.limit ?? 100, 1), 500);
+): Promise<GraphNetwork> =>
+  withSession(async (session) => {
+    const limit = Math.min(Math.max(filter.limit ?? 100, 1), 500);
 
-  try {
     const result = await session.run(
       `
         MATCH (from)-[relationship]->(to)
@@ -316,20 +293,16 @@ export const getGraphRelationships = async (
     );
 
     return buildNetworkFromRelationshipRecords(result.records);
-  } finally {
-    await session.close();
-  }
-};
+  });
 
-const getRootNetwork = async (
+const getRootNetwork = (
   label: "CASE" | "PERSON",
   id: string,
   depth = 2,
-): Promise<GraphNetwork | null> => {
-  const session = neo4jDriver.session({ database: neo4jDatabase });
-  const boundedDepth = Math.min(Math.max(depth, 1), 3);
+): Promise<GraphNetwork | null> =>
+  withSession(async (session) => {
+    const boundedDepth = Math.min(Math.max(depth, 1), 3);
 
-  try {
     const rootResult = await session.run(
       `MATCH (root:${label} {id: $id}) RETURN root LIMIT 1`,
       { id },
@@ -370,17 +343,14 @@ const getRootNetwork = async (
       nodes: [...nodeById.values()],
       relationships: network.relationships,
     };
-  } finally {
-    await session.close();
-  }
-};
+  });
 
-export const getCaseNetwork = async (
+export const getCaseNetwork = (
   caseId: string,
   depth?: number,
 ): Promise<GraphNetwork | null> => getRootNetwork("CASE", caseId, depth);
 
-export const getPersonNetwork = async (
+export const getPersonNetwork = (
   personId: string,
   depth?: number,
 ): Promise<GraphNetwork | null> => getRootNetwork("PERSON", personId, depth);

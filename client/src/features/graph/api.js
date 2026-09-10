@@ -1,16 +1,22 @@
-import axios from "axios";
+import api from "../../lib/axios";
 
-const API_URL = "http://localhost:5000/api";
-
-export const searchGraph = async (search) => {
-  const response = await axios.get(
-    `${API_URL}/graph/search`,
-    {
-      params: {
-        search,
-      },
-    }
+const cleanParams = (params = {}) =>
+  Object.fromEntries(
+    Object.entries(params)
+      .filter(([, value]) => value !== "" && value !== undefined && value !== null)
+      .map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value]),
   );
 
-  return response.data;
-};
+const readData = (response) => response.data.data;
+
+export const searchGraph = async (search) =>
+  readData(await api.get("/graph/search", { params: { search } }));
+
+export const getFilteredGraph = async (filters = {}) =>
+  readData(await api.get("/graph/filtered", { params: cleanParams(filters) }));
+
+export const getGraphNode = async (nodeId) =>
+  readData(await api.get(`/graph/nodes/${encodeURIComponent(nodeId)}`));
+
+export const getGraphNeighbors = async (nodeId) =>
+  readData(await api.get(`/graph/nodes/${encodeURIComponent(nodeId)}/neighbors`));

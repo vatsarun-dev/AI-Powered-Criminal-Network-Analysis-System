@@ -15,13 +15,23 @@ const partySchema = new Schema(
   { _id: false },
 );
 
+const coordinateSchema = new Schema(
+  {
+    latitude: { type: Number, required: true, min: -90, max: 90 },
+    longitude: { type: Number, required: true, min: -180, max: 180 },
+  },
+  { _id: false },
+);
+
 export type FirMongoDocument = {
   firNumber: string;
   year: number;
   registrationDate: Date;
   incidentDate?: Date;
   district: string;
+  districtCoordinates?: { latitude: number; longitude: number };
   policeStation: string;
+  policeStationCoordinates?: { latitude: number; longitude: number };
   crimeCategory: string;
   sections: string[];
   description: string;
@@ -78,7 +88,9 @@ const firSchema = new Schema<FirMongoDocument>(
     registrationDate: { type: Date, required: true, index: true },
     incidentDate: { type: Date, index: true },
     district: { type: String, required: true, trim: true, maxlength: 150, index: true },
+    districtCoordinates: { type: coordinateSchema },
     policeStation: { type: String, required: true, trim: true, maxlength: 200, index: true },
+    policeStationCoordinates: { type: coordinateSchema },
     crimeCategory: { type: String, required: true, trim: true, maxlength: 200, index: true },
     sections: { type: [String], default: [] },
     description: { type: String, required: true, trim: true, maxlength: 25000 },

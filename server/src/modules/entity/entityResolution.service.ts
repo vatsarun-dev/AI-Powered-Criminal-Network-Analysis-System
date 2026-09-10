@@ -1,7 +1,7 @@
 import * as fuzzball from "fuzzball";
 
-import { neo4jDriver, neo4jDatabase } from "../config/neo4j.js";
-import { normalizeEntityValue } from "../service/entity-normalization.service.js";
+import { withSession } from "../graph/graph.service.js";
+import { normalizeEntityValue } from "../../service/entity-normalization.service.js";
 
 export const RESOLUTION_STATUSES = [
   "MATCHED",
@@ -570,9 +570,8 @@ const graphPersonToCandidate = (record: {
   };
 };
 
-const getPersonsForResolution = async (): Promise<PersonResolutionCandidate[]> => {
-  const session = neo4jDriver.session({ database: neo4jDatabase });
-  try {
+const getPersonsForResolution = (): Promise<PersonResolutionCandidate[]> =>
+  withSession(async (session) => {
     const result = await session.run(`
       MATCH (person:PERSON)
       OPTIONAL MATCH (person)-[:USES]-(phone:PHONE)
@@ -591,10 +590,7 @@ const getPersonsForResolution = async (): Promise<PersonResolutionCandidate[]> =
     return result.records
       .map(graphPersonToCandidate)
       .filter((candidate): candidate is PersonResolutionCandidate => candidate !== null);
-  } finally {
-    await session.close();
-  }
-};
+  });
 
 /** Phase 2 is read-only: no Mongo evidence or Neo4j node is merged or changed. */
 export const resolvePerson = async (

@@ -1,9 +1,9 @@
-import { EntityModel } from "../models/entity.model.js";
-import type { EntityType } from "../types/entity.js";
+import { EntityModel } from "../../models/entity.model.js";
+import type { EntityType } from "../../types/entity.js";
 
 import { getEntityNodeLabel } from "./entity-node-labels.js";
-import type { NodeLabel } from "./graph.constants.js";
-import { createNode } from "./graph.service.js";
+import type { NodeLabel } from "../graph/graph.constants.js";
+import { createNode } from "../graph/graph.service.js";
 
 type EntityGraphSource = {
   _id: { toString(): string };

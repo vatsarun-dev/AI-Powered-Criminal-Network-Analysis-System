@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 
-import { NODE_LABELS, RELATIONSHIP_TYPES } from "../graph/graph.constants.js";
+import { NODE_LABELS, RELATIONSHIP_TYPES } from "../modules/graph/graph.constants.js";
 
 /**
  * MongoDB retains the evidence-level relationship record. Neo4j receives a

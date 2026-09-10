@@ -17,7 +17,9 @@ const CREATE_FIELDS = new Set([
   "registrationDate",
   "incidentDate",
   "district",
+  "districtCoordinates",
   "policeStation",
+  "policeStationCoordinates",
   "crimeCategory",
   "sections",
   "description",
@@ -76,6 +78,25 @@ const dateValue = (value: unknown, field: string): Date => {
 
 const optionalDate = (value: unknown, field: string): Date | undefined =>
   value === undefined ? undefined : dateValue(value, field);
+
+const coordinates = (value: unknown, field: string) => {
+  if (!isPlainObject(value)) {
+    throw new BadRequestError(`${field} must be an object with latitude and longitude`);
+  }
+  rejectUnknownFields(value, new Set(["latitude", "longitude"]));
+  const latitude = typeof value.latitude === "number" ? value.latitude : Number(value.latitude);
+  const longitude = typeof value.longitude === "number" ? value.longitude : Number(value.longitude);
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    throw new BadRequestError(`${field}.latitude must be between -90 and 90`);
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new BadRequestError(`${field}.longitude must be between -180 and 180`);
+  }
+  return { latitude, longitude };
+};
+
+const optionalCoordinates = (value: unknown, field: string) =>
+  value === undefined ? undefined : coordinates(value, field);
 
 const positiveYear = (value: unknown): number => {
   const year = typeof value === "number" ? value : Number(value);
@@ -182,6 +203,11 @@ export const parseFirCreateInput = (value: unknown): FirCreateInput => {
 
   const registrationDate = dateValue(value.registrationDate, "registrationDate");
   const incidentDate = optionalDate(value.incidentDate, "incidentDate");
+  const districtCoordinates = optionalCoordinates(value.districtCoordinates, "districtCoordinates");
+  const policeStationCoordinates = optionalCoordinates(
+    value.policeStationCoordinates,
+    "policeStationCoordinates",
+  );
   assertIncidentPrecedesRegistration(incidentDate, registrationDate);
   const investigatingOfficer =
     value.investigatingOfficer === undefined
@@ -196,7 +222,9 @@ export const parseFirCreateInput = (value: unknown): FirCreateInput => {
     registrationDate,
     ...(incidentDate ? { incidentDate } : {}),
     district: requiredString(value.district, "district", 150),
+    ...(districtCoordinates ? { districtCoordinates } : {}),
     policeStation: requiredString(value.policeStation, "policeStation", 200),
+    ...(policeStationCoordinates ? { policeStationCoordinates } : {}),
     crimeCategory: requiredString(value.crimeCategory, "crimeCategory", 200),
     sections: value.sections === undefined ? [] : stringList(value.sections, "sections"),
     description: requiredString(value.description, "description", 25000),
@@ -228,6 +256,11 @@ export const parseFirUpdateInput = (value: unknown): FirUpdateInput => {
     registrationDate,
   );
   const result: FirUpdateInput = {};
+  const districtCoordinates = optionalCoordinates(value.districtCoordinates, "districtCoordinates");
+  const policeStationCoordinates = optionalCoordinates(
+    value.policeStationCoordinates,
+    "policeStationCoordinates",
+  );
   const firNumber = optionalString(value.firNumber, "firNumber", 100);
   const year = optionalYear(value.year);
   const district = optionalString(value.district, "district", 150);
@@ -245,7 +278,9 @@ export const parseFirUpdateInput = (value: unknown): FirUpdateInput => {
   if (registrationDate) result.registrationDate = registrationDate;
   if (incidentDate !== undefined) result.incidentDate = incidentDate;
   if (district) result.district = district;
+  if (districtCoordinates) result.districtCoordinates = districtCoordinates;
   if (policeStation) result.policeStation = policeStation;
+  if (policeStationCoordinates) result.policeStationCoordinates = policeStationCoordinates;
   if (crimeCategory) result.crimeCategory = crimeCategory;
   if (sections) result.sections = sections;
   if (description) result.description = description;

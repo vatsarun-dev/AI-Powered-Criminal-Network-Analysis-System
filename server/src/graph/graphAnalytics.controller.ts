@@ -1,56 +1,49 @@
-import type { Request, Response } from "express";
+import type { RequestHandler } from "express";
 
 import {
   getDegreeCentrality,
   getBetweennessCentrality,
   getLouvainCommunities,
-} from "./graphAnalytics.service.js";
+} from "../modules/graph/graphAnalytics.service.js";
 
-export const degreeCentrality = async (_req: Request, res: Response) => {
-  try {
+import asyncHandler from "../utils/asyncHandler.js";
+import { successResponse } from "../utils/ApiResponse.js";
+
+export const degreeCentrality: RequestHandler = asyncHandler(
+  async (_req, res) => {
     const results = await getDegreeCentrality();
 
-    return res.status(200).json({
-      message: "Degree centrality calculated successfully",
-      results,
-    });
-  } catch (error) {
-    console.error("Degree centrality error:", error);
+    return res.status(200).json(
+      successResponse(
+        "Degree centrality calculated successfully",
+        results,
+      ),
+    );
+  },
+);
 
-    return res.status(500).json({
-      message: "Failed to calculate degree centrality",
-    });
-  }
-};
-export const betweennessCentrality = async (_req: Request, res: Response) => {
-  try {
+export const betweennessCentrality: RequestHandler = asyncHandler(
+  async (_req, res) => {
     const results = await getBetweennessCentrality();
 
-    return res.status(200).json({
-      message: "Betweenness centrality calculated successfully",
-      results,
-    });
-  } catch (error) {
-    console.error("Betweenness centrality error:", error);
+    return res.status(200).json(
+      successResponse(
+        "Betweenness centrality calculated successfully",
+        results,
+      ),
+    );
+  },
+);
 
-    return res.status(500).json({
-      message: "Failed to calculate betweenness centrality",
-    });
-  }
-};
-export const louvainCommunities = async (_req: Request, res: Response) => {
-  try {
+export const louvainCommunities: RequestHandler = asyncHandler(
+  async (_req, res) => {
     const results = await getLouvainCommunities();
 
-    return res.status(200).json({
-      message: "Louvain communities calculated successfully",
-      results,
-    });
-  } catch (error) {
-    console.error("Louvain community detection error:", error);
-
-    return res.status(500).json({
-      message: "Failed to calculate Louvain communities",
-    });
-  }
-};
+    return res.status(200).json(
+      successResponse(
+        "Louvain communities calculated successfully",
+        results,
+      ),
+    );
+  },
+);

@@ -6,7 +6,7 @@ import { deduplicateExtractedEntities } from "../service/entity-deduplication.se
 import { extractDomainEntities } from "../service/domain-extraction.service.js";
 import { prepareEntityDocuments } from "../service/entity-persistence-preparation.service.js";
 import type { ExtractedEntity, EntityType } from "../types/entity.js";
-import { resolvePersonAgainstCandidates } from "./entityResolution.service.js";
+import { resolvePersonAgainstCandidates } from "../modules/entity/entityResolution.service.js";
 import {
   RELATIONSHIP_MODEL_VERSION,
   extractEvidenceBackedRelationships,

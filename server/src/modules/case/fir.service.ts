@@ -3,7 +3,7 @@ import { FirModel, type FirMongoDocument } from "../../models/fir.model.js";
 import { FileModel } from "../../models/file.model.js";
 import { OCRResult } from "../../models/ocr-result.model.js";
 import { RelationshipEvidenceModel } from "../../models/relationship-evidence.model.js";
-import { getCaseNetwork, getGraphRelationships } from "../../graph/graphQuery.service.js";
+import { getCaseNetwork, getGraphRelationships } from "../graph/graphQuery.service.js";
 import {
   BadRequestError,
   ConflictError,

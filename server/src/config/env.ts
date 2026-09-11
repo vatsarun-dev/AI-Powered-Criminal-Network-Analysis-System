@@ -25,8 +25,8 @@ const envSchema = z.object({
   NEO4J_PASSWORD: z.string(),
   NEO4J_URI: z.string(),
   NEO4J_USERNAME: z.string(),
-  AURA_INSTANCEID: z.string(),
-  AURA_INSTANCENAME: z.string(),
+  AURA_INSTANCEID: z.string().optional(),
+  AURA_INSTANCENAME: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

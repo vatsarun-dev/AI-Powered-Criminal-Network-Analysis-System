@@ -8,11 +8,14 @@ import graphRoutes from "../graph/graph.routes.js";
 import alertRoutes from "../modules/alert/alert.routes.js";
 import analyticsRoutes from "../modules/analytics/analytics.routes.js";
 import mapRoutes from "../modules/map/map.routes.js";
+import { healthCheck } from "./health.js";
 
 export default function createApp(): Express {
   const app = express();
 
   securityMiddleware(app);
+
+  app.get("/api/health", healthCheck);
 
   app.use("/api/auth", authRoutes);
   app.use("/api/cases", caseRoutes);

@@ -60,6 +60,7 @@ const Reports = () => {
       const response = await getAlerts();
 
       const data =
+        (Array.isArray(response) ? response : null) ||
         response?.data?.data ||
         response?.data ||
         [];

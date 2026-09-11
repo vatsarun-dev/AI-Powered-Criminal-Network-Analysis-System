@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { uploadFile } from "../api";
 
-export default function FileUpload() {
+export default function FileUpload({ type, caseId, onUploaded }) {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState(""); // "", "uploading", "success", "error"
@@ -31,11 +31,17 @@ export default function FileUpload() {
 
   const handleUpload = async () => {
     if (!file) return;
+    if (!type || !caseId) {
+      setStatus("error");
+      setError("A file type and case are required before uploading.");
+      return;
+    }
     setStatus("uploading");
     setError("");
     try {
-      await uploadFile(file, setProgress);
+      const uploadedFile = await uploadFile({ file, type, caseId }, setProgress);
       setStatus("success");
+      onUploaded?.(uploadedFile);
     } catch (err) {
       setStatus("error");
       setError(err.response?.data?.message || "Upload failed. Try again.");

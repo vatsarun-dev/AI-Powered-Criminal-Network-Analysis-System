@@ -5,7 +5,7 @@ export const getAlerts = async (params = {}) => {
     params,
   });
 
-  return response.data;
+  return response.data.data.data;
 };
 
 export const updateAlertStatus = async (alertId, status) => {
@@ -14,7 +14,7 @@ export const updateAlertStatus = async (alertId, status) => {
     { status }
   );
 
-  return response.data;
+  return response.data.data.data;
 };
 
 // FIR / Report APIs

@@ -27,6 +27,8 @@ const envSchema = z.object({
   NEO4J_USERNAME: z.string(),
   AURA_INSTANCEID: z.string().optional(),
   AURA_INSTANCENAME: z.string().optional(),
+  MISTRAL_API_KEY: z.string().min(1).optional(),
+  MISTRAL_MODEL: z.string().default("mistral-small-latest"),
 });
 
 const parsed = envSchema.safeParse(process.env);

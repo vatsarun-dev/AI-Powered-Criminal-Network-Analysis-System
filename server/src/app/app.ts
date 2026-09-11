@@ -8,6 +8,7 @@ import graphRoutes from "../graph/graph.routes.js";
 import alertRoutes from "../modules/alert/alert.routes.js";
 import analyticsRoutes from "../modules/analytics/analytics.routes.js";
 import mapRoutes from "../modules/map/map.routes.js";
+import ragRoutes from "../modules/rag/rag.routes.js";
 import { healthCheck } from "./health.js";
 
 export default function createApp(): Express {
@@ -24,6 +25,7 @@ export default function createApp(): Express {
   app.use("/api/alerts", alertRoutes);
   app.use("/api/analytics", analyticsRoutes);
   app.use("/api/map", mapRoutes);
+  app.use("/api/rag", ragRoutes);
 
   app.use(errorHandler);
 

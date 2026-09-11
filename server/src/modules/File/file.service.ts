@@ -1,7 +1,9 @@
 import path from "node:path";
+import { Types } from "mongoose";
 
 import { FileType, File } from "../../types/file.js";
 import { FileModel } from "../../models/file.model.js";
+import { FirModel } from "../../models/fir.model.js";
 import { FileResponse } from "../../types/Response.js";
 import { extractTextFromPdf } from "../../service/pdf-ocr.service.js";
 
@@ -76,6 +78,15 @@ export default class FileService {
 
     if (!updatedFile) {
       throw new Error("uploaded file not found");
+    }
+
+    // When the supplied caseId is an existing FIR id, make its evidence
+    // source explicit so existing FIR, map, graph and RAG queries use this
+    // real uploaded document. Other legacy case identifiers remain supported.
+    if (type === "FIR" && Types.ObjectId.isValid(caseId)) {
+      await FirModel.findByIdAndUpdate(caseId, {
+        $set: { sourceDocument: uploadedFile._id },
+      });
     }
 
     return this.response(updatedFile);

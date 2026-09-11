@@ -4,6 +4,9 @@ import Timeline from "../../features/timeline/components/Timeline";
 import InvestigationMap from "../../features/map/components/InvestigationMap";
 
 import { getEntityConnections } from "../../features/timeline/api";
+import { getFirs } from "../../features/reports/api";
+import FileUpload from "../../features/upload/components/FileUpload";
+import RagPanel from "../../features/rag/components/RagPanel";
 
 import { useInvestigationStore } from "../../store/investigationStore";
 
@@ -14,12 +17,28 @@ const Investigation = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [firs, setFirs] = useState([]);
+  const [selectedFirId, setSelectedFirId] = useState("");
+  const [firError, setFirError] = useState("");
 
   const selectedEntity = useInvestigationStore(
     (state) => state.selectedEntity
   );
 
   const entityId = selectedEntity?.id;
+
+  useEffect(() => {
+    let current = true;
+    getFirs()
+      .then((response) => {
+        const items = response?.data?.items ?? [];
+        if (current) setFirs(items);
+      })
+      .catch((requestError) => {
+        if (current) setFirError(requestError.response?.data?.message || "Unable to load FIRs for upload.");
+      });
+    return () => { current = false; };
+  }, []);
 
   useEffect(() => {
     if (!entityId) {
@@ -162,6 +181,23 @@ const Investigation = () => {
           </span>
         )}
       </header>
+
+      <section className="investigation-upload-panel">
+        <div className="panel-header"><div><span>FIR EVIDENCE</span><h2>Upload and query</h2></div></div>
+        <div className="investigation-upload-content">
+          <label className="fir-upload-select" htmlFor="investigation-fir">
+            <span>FIR / CASE</span>
+            <select id="investigation-fir" value={selectedFirId} onChange={(event) => setSelectedFirId(event.target.value)}>
+              <option value="">Select an existing FIR</option>
+              {firs.map((fir) => <option key={fir.id} value={fir.id}>FIR {fir.firNumber} / {fir.year}</option>)}
+            </select>
+          </label>
+          {firError ? <p className="investigation-error" role="alert">{firError}</p> : null}
+          <FileUpload type="FIR" caseId={selectedFirId} onUploaded={() => setSelectedFirId((current) => current)} />
+        </div>
+      </section>
+
+      <RagPanel firId={selectedFirId} />
 
       <div className="investigation-grid">
         {/* TIMELINE */}

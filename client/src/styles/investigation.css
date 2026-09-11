@@ -419,3 +419,23 @@
 .investigation-map .leaflet-popup-close-button:hover {
   color: #c8ff00 !important;
 }
+
+.investigation-upload-panel {
+  margin: 0 0 18px;
+  border: 1px solid var(--border-light, #222);
+  background: var(--surface, #0d0d0d);
+}
+
+.investigation-upload-content {
+  display: grid;
+  grid-template-columns: minmax(220px, .7fr) minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px;
+  align-items: start;
+}
+
+.fir-upload-select { display: grid; gap: 8px; color: var(--text-muted, #777); font: 10px var(--font-mono, monospace); letter-spacing: .08em; }
+.fir-upload-select select { min-height: 44px; padding: 0 12px; border: 1px solid var(--border, #333); background: transparent; color: inherit; }
+.investigation-upload-content .file-upload { max-width: none; }
+
+@media (max-width: 700px) { .investigation-upload-content { grid-template-columns: 1fr; padding: 16px; } }

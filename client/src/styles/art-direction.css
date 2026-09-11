@@ -1,0 +1,111 @@
+/* Visual layer only: keeps the existing page, component, and data structure intact. */
+:root {
+  --bg: #eee9df;
+  --bg-soft: #e4ded2;
+  --surface: #f7f3eb;
+  --surface-hover: #fffdf8;
+  --text: #20211e;
+  --text-muted: #716e66;
+  --accent: #bd4d32;
+  --accent-soft: rgba(189, 77, 50, .11);
+  --border: rgba(32, 33, 30, .22);
+  --border-light: rgba(32, 33, 30, .12);
+  --font-main: Georgia, "Times New Roman", serif;
+  --font-mono: "DM Mono", monospace;
+}
+
+body, .app { background: var(--bg); color: var(--text); }
+::selection { background: var(--accent); color: #fffaf2; }
+button, input, select, textarea { border-radius: 0 !important; }
+
+/* Landing */
+.landing { background: var(--bg); color: var(--text); }
+.landing-grid { opacity: .55; background-image: linear-gradient(to right, rgba(32,33,30,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(32,33,30,.08) 1px, transparent 1px); }
+.landing-nav { padding: 24px 40px; border-color: var(--border); }
+.landing-logo, .landing-title, .dashboard-header h1, .crime-map-header h1, .reports-header h1, .investigation-header h1 { font-family: var(--font-main); }
+.logo-dot, .sidebar-logo-dot, .status-dot { background: var(--accent); box-shadow: none; }
+.nav-status, .landing-eyebrow, .landing-footer { color: var(--text-muted); }
+.landing-eyebrow span, .nav-enter:hover { color: var(--accent); }
+.landing-title { letter-spacing: -.065em; font-weight: 700; }
+.title-outline { -webkit-text-stroke: 1px rgba(32,33,30,.48); }
+.landing-description { color: #4e4d47; font-size: 1.08rem; }
+.landing-button { border-color: var(--text); background: var(--text); color: #fffaf2; }
+.landing-button:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+.landing-footer { border-color: var(--border); }
+
+/* Authentication */
+.auth-page { background: var(--bg) !important; }
+.auth-page::before { opacity: .62; background-image: linear-gradient(rgba(32,33,30,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(32,33,30,.05) 1px, transparent 1px); }
+.auth-card { background: #f9f5ed !important; border: 1px solid var(--text) !important; border-radius: 0 !important; box-shadow: 10px 10px 0 rgba(32,33,30,.12) !important; backdrop-filter: none !important; }
+.auth-card::before { left: 0 !important; right: 0 !important; background: var(--accent) !important; }
+.auth-logo { border-color: var(--text) !important; border-radius: 50% !important; background: transparent !important; color: var(--accent) !important; box-shadow: none !important; }
+.auth-header h1 { color: var(--text) !important; font-family: var(--font-main); font-size: 2.25rem !important; }
+.auth-header p, .auth-footer { color: var(--text-muted) !important; }
+.form-field label { color: #58574f !important; }
+.form-field input, .form-field select { border-color: var(--border) !important; background: #fffdf8 !important; color: var(--text) !important; }
+.form-field input:focus, .form-field select:focus { border-color: var(--accent) !important; box-shadow: 3px 3px 0 var(--accent-soft) !important; }
+.auth-primary-button { background: var(--accent) !important; border-color: var(--accent) !important; color: #fffaf2 !important; }
+.auth-secondary-button { border-color: var(--text) !important; color: var(--text) !important; }
+
+/* Shared operational surfaces */
+.dashboard, .investigation-page, .reports-page, .crime-map-page, .graph-page { background: var(--bg) !important; color: var(--text) !important; }
+.dashboard-sidebar { background: #ded7c9; border-color: var(--border-light); }
+.sidebar-link { color: #5a584f; border-left-width: 2px; }
+.sidebar-link:hover { color: var(--text); background: rgba(255,253,248,.55); }
+.sidebar-link.active { color: var(--text); background: var(--accent-soft); border-left-color: var(--accent); }
+.system-status, .stat-card, .network-panel, .activity-panel, .dashboard-card, .investigation-panel, .rag-panel, .reports-panel, .map-card { background: var(--surface) !important; border-color: var(--border-light) !important; box-shadow: none !important; }
+.system-status strong, .dashboard-header h1, .panel-header h2, .stat-card strong { color: var(--text); }
+.dashboard-main { padding: 42px 48px; }
+.dashboard-header { border-color: var(--border); }
+.dashboard-breadcrumb, .panel-action, .activity-number, .text-accent { color: var(--accent); }
+.dashboard-header h1 span { -webkit-text-stroke-color: rgba(32,33,30,.38); }
+.dashboard-search { border-color: var(--border); background: #fffdf8; color: var(--text-muted); }
+.dashboard-search input { color: var(--text); }
+.stat-card { min-height: 174px; }
+.stat-card:hover, .dashboard-card:hover { transform: translateY(-2px); border-color: var(--text); background: var(--surface-hover) !important; }
+.accent-card { background: var(--accent) !important; color: #fffaf2 !important; }
+.accent-card .stat-top, .accent-card .stat-description { color: rgba(255,250,242,.8) !important; }
+.panel-header, .activity-item { border-color: var(--border-light); }
+.activity-item:hover { background: #f0eadf; }
+.notification-button { border-color: var(--border); background: transparent; color: var(--text); }
+.notification-button:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Graph and map retain their libraries; this only styles their chrome. */
+.graph-page-header, .crime-map-header, .reports-header, .investigation-header { border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+.graph-page-eyebrow, .map-eyebrow, .reports-eyebrow, .investigation-header .eyebrow { color: var(--accent) !important; }
+.graph-page p, .crime-map-header p, .reports-header p { color: var(--text-muted); }
+.graph-page-notice, .map-safeguard { background: #e6ded0 !important; border-color: var(--border) !important; color: #5d4036 !important; }
+.graph-toolbar, .graph-filter-bar, .map-filter-panel { background: #e6ded0 !important; border-color: var(--border) !important; }
+.graph-search-wrap, .graph-filter-bar select, .graph-filter-bar input, .map-filter-panel select, .map-filter-panel input { background: #fffdf8 !important; border-color: var(--border) !important; color: var(--text) !important; }
+.graph-toolbar button, .graph-filter-bar > button, .map-reset-button, .map-close-detail { background: var(--text) !important; color: #fffaf2 !important; border-color: var(--text) !important; }
+.graph-stage { background: #f5efe5 !important; border-color: var(--border) !important; }
+.graph-stage-heading, .graph-legend { background: rgba(247,243,235,.94) !important; border-color: var(--border-light) !important; color: var(--text); }
+.graph-live i { background: var(--accent) !important; box-shadow: none !important; }
+.node-details, .graph-error, .map-error { background: #fffaf2 !important; border-color: var(--border) !important; color: var(--text) !important; }
+.node-details-label, .node-type, .node-detail-row span { color: var(--accent) !important; }
+.crime-map-canvas .leaflet-tile, .investigation-map .leaflet-tile { filter: grayscale(.82) sepia(.16) contrast(.9) brightness(1.07) !important; }
+.crime-map-canvas .leaflet-control-zoom a, .investigation-map .leaflet-control-zoom a { background: #fffaf2 !important; color: var(--text) !important; border-color: var(--border) !important; }
+
+/* Investigation, reports, and upload states */
+.selected-investigation-entity span, .rag-result-meta, .rag-sources strong, .timeline-time, .map-location-stats strong, .map-distribution-list li strong { color: var(--accent) !important; border-color: var(--accent) !important; }
+.rag-form input, .rag-form select { background: #fffdf8 !important; border-color: var(--border) !important; color: var(--text) !important; }
+.rag-form button, .generate-report-btn, .report-action-btn { background: var(--accent) !important; border-color: var(--accent) !important; color: #fffaf2 !important; }
+.timeline-content, .rag-sources li, .alert-item, .map-recent-cases li { background: #f2ece1 !important; border-color: var(--border-light) !important; }
+.timeline-item.active .timeline-content { border-color: var(--accent) !important; }
+.timeline-item:hover .timeline-dot, .timeline-item.active .timeline-dot { background: var(--accent) !important; border-color: var(--accent) !important; box-shadow: none !important; }
+.report-placeholder { color: var(--text-muted); }
+.alert-medium { border-left-color: var(--accent) !important; }
+.file-drop-zone { border-color: var(--border); color: var(--text-muted); background: var(--surface); }
+.file-drop-zone:hover { border-color: var(--accent); }
+.upload-progress { background: #ded7c9; border-radius: 0; }
+.upload-progress-bar { background: var(--accent); }
+
+@media (max-width: 768px) {
+  .dashboard-main { padding: 28px 20px; }
+  .landing-nav { padding: 20px; }
+  .auth-card { padding: 30px 24px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

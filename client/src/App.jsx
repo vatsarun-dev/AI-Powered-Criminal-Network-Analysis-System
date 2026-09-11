@@ -6,6 +6,7 @@ import "./styles/upload.css";
 import "./styles/graph.css";
 import "./styles/map.css";
 import "./App.css";
+import "./styles/art-direction.css";
 
 function App() {
   useLenis();

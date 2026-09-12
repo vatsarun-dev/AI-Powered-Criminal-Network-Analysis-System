@@ -18,6 +18,7 @@ export const ENTITY_TO_NODE_LABEL: Record<EntityType, NodeLabel> = {
   POLICE_STATION: "POLICE_STATION",
   COURT: "COURT",
   CRIME_CATEGORY: "CRIME_CATEGORY",
+  EVENT: "EVENT",
 };
 
 export const getEntityNodeLabel = (entityType: EntityType): NodeLabel =>

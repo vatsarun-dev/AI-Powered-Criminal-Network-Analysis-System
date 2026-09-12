@@ -1,23 +1,19 @@
 import api from "../../lib/axios";
 
-// Uploads a single file to the backend (multer expects multipart/form-data)
-export const uploadFile = async (file, onProgress) => {
+export const uploadFile = async ({ file, type, caseId, onProgress }) => {
   const formData = new FormData();
-  formData.append("file", file); // "file" must match multer's field name on backend
+  formData.append("file", file);
+  formData.append("type", type);
+  formData.append("caseId", caseId);
 
-  const res = await api.post("/uploads/file", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+  const response = await api.post("/uploads/file", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (progressEvent) => {
       if (onProgress && progressEvent.total) {
-        const percent = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total,
-        );
-        onProgress(percent);
+        onProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
       }
     },
   });
 
-  return res.data; // expected: { fileUrl, fileName, ... } — confirm shape with backend
+  return response.data.data?.data ?? response.data.data;
 };

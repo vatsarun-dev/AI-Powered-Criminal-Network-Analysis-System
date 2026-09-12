@@ -1,25 +1,22 @@
-import { Request, Response, RequestHandler } from "express";
+import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { successResponse } from "../../utils/ApiResponse.js";
 import FileService from "./file.service.js";
 
-import {
-  ConflictError,
-  NotFoundError,
-  UnauthorizedError,
-} from "../../shared/error/globalError.js";
-import { FileType } from "../../types/file.js";
+import { BadRequestError } from "../../shared/error/globalError.js";
 export default class FileController {
   private readonly fileService = new FileService();
 
   async fileUploadController(req: Request, res: Response): Promise<void> {
     const { type, caseId } = req.body;
-    if (!type || !caseId) throw new NotFoundError("no caseId found ");
+    if (typeof type !== "string" || typeof caseId !== "string" || !type.trim() || !caseId.trim()) {
+      throw new BadRequestError("type and caseId are required");
+    }
 
-    if (!req.file) throw new NotFoundError("no file found");
+    if (!req.file) throw new BadRequestError("file is required");
 
     const file = req.file as Express.Multer.File;
-    const result = await this.fileService.fileUploadService(file, type, caseId);
+    const result = await this.fileService.fileUploadService(file, type.trim(), caseId.trim());
     res
       .status(StatusCodes.OK)
       .json(successResponse("file uploaded successfully", { data: result }));

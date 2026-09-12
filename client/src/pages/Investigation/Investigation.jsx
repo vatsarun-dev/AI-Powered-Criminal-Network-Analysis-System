@@ -1,201 +1,149 @@
 import { useEffect, useState } from "react";
 
-import Timeline from "../../features/timeline/components/Timeline";
 import InvestigationMap from "../../features/map/components/InvestigationMap";
-
+import RagPanel from "../../features/rag/components/RagPanel";
 import { getEntityConnections } from "../../features/timeline/api";
-
+import Timeline from "../../features/timeline/components/Timeline";
 import { useInvestigationStore } from "../../store/investigationStore";
-
 import "../../styles/investigation.css";
 
-const Investigation = () => {
+const locationName = (location) =>
+  location?.properties?.name || location?.properties?.location_name;
+
+const uniqueLocations = (connections) =>
+  connections
+    .flatMap((connection) => [connection.source, connection.target])
+    .filter((node) => node?.labels?.includes("LOCATION"))
+    .filter(
+      (node, index, nodes) =>
+        nodes.findIndex((item) => item?.id === node.id) === index,
+    );
+
+const eventForLocation = (connections, targetLocationName) =>
+  connections
+    .flatMap((connection) => [connection.source, connection.target])
+    .filter(
+      (node, index, nodes) =>
+        node?.labels?.includes("EVENT") &&
+        nodes.findIndex((item) => item?.id === node.id) === index,
+    )
+    .find(
+      (event) =>
+        (event.properties?.location || event.properties?.location_name) ===
+        targetLocationName,
+    );
+
+export default function Investigation() {
   const [connections, setConnections] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const selectedEntity = useInvestigationStore(
-    (state) => state.selectedEntity
-  );
-
+  const [error, setError] = useState("");
+  const selectedEntity = useInvestigationStore((state) => state.selectedEntity);
   const entityId = selectedEntity?.id;
 
   useEffect(() => {
-    if (!entityId) {
-      setConnections([]);
-      setSelectedEvent(null);
-      setSelectedLocation(null);
-      return;
-    }
-   if (!entityId) {
-  return;
-}
+    let current = true;
 
-    const loadConnections = async () => {
+    if (!entityId) {
+      return () => {
+        current = false;
+      };
+    }
+
+    void (async () => {
       try {
         setLoading(true);
-
-        const response = await getEntityConnections(entityId);
-
-        const data = response?.data || response || [];
-
-        setConnections(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error(
-          "Failed to load investigation data:",
-          error
-        );
-
+        setError("");
+        const data = await getEntityConnections(entityId);
+        if (current) setConnections(Array.isArray(data) ? data : []);
+      } catch (requestError) {
+        if (!current) return;
         setConnections([]);
+        setError(
+          requestError.response?.data?.message ||
+            "Unable to load investigation connections.",
+        );
       } finally {
-        setLoading(false);
+        if (current) setLoading(false);
       }
-    };
+    })();
 
-    loadConnections();
+    return () => {
+      current = false;
+    };
   }, [entityId]);
 
-  /*
-   * Extract unique LOCATION nodes from graph connections
-   */
-  const locations = connections
-    .flatMap((connection) => [
-      connection.source,
-      connection.target,
   const activeConnections = entityId ? connections : [];
+  const locations = uniqueLocations(activeConnections);
 
-  const locations = activeConnections
-    .flatMap((item) => [
-      item.source,
-      item.target,
-    ])
-    .filter((node) => node?.labels?.includes("LOCATION"))
-    .filter(
-      (node, index, array) =>
-        array.findIndex(
-          (item) => item?.id === node?.id
-        ) === index
-    );
-
-  /*
-   * Timeline event → Map location
-   */
   const handleEventSelect = (event) => {
     setSelectedEvent(event);
-
     const eventLocation =
-      event.properties?.location ||
-      event.properties?.location_name;
-
+      event.properties?.location || event.properties?.location_name;
     if (!eventLocation) return;
-
-    const relatedLocation = locations.find((location) => {
-      const locationName =
-        location.properties?.name ||
-        location.properties?.location_name;
-
-      return locationName === eventLocation;
-    });
-
-    if (relatedLocation) {
-      setSelectedLocation(relatedLocation);
-    }
+    const matchingLocation = locations.find(
+      (location) => locationName(location) === eventLocation,
+    );
+    if (matchingLocation) setSelectedLocation(matchingLocation);
   };
 
-  /*
-   * Map location → Timeline event
-   */
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
-
-    const locationName =
-      location.properties?.name ||
-      location.properties?.location_name;
-
-    if (!locationName) return;
-
-    const relatedEvent = connections
-      .flatMap((connection) => {
-        const source = connection.source;
-        const target = connection.target;
-
-        const event = source?.labels?.includes("EVENT")
-          ? source
-          : target?.labels?.includes("EVENT")
-          ? target
-          : null;
-
-        return event ? [event] : [];
-      })
-      .find((event) => {
-        const eventLocation =
-          event.properties?.location ||
-          event.properties?.location_name;
-
-        return eventLocation === locationName;
-      });
-
-    if (relatedEvent) {
-      setSelectedEvent(relatedEvent);
-    }
+    const matchingEvent = eventForLocation(
+      activeConnections,
+      locationName(location),
+    );
+    if (matchingEvent) setSelectedEvent(matchingEvent);
   };
 
   return (
     <div className="investigation-page">
       <header className="investigation-header">
         <div>
-          <span className="eyebrow">
-            INVESTIGATION
-          </span>
-
+          <span className="eyebrow">INVESTIGATION</span>
           <h1>Timeline / Map</h1>
-
-          {selectedEntity && (
+          {selectedEntity ? (
             <div className="selected-investigation-entity">
               <span>{selectedEntity.type}</span>
-
               <strong>{selectedEntity.label}</strong>
             </div>
-          )}
+          ) : null}
         </div>
-
-        {loading && (
-          <span className="mono">
-            LOADING...
-          </span>
-        )}
+        {loading ? <span className="mono">LOADING...</span> : null}
       </header>
 
+      {error ? (
+        <p className="investigation-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {!entityId ? (
+        <p className="investigation-empty">
+          Select an entity from the dashboard or graph to inspect its timeline
+          and locations.
+        </p>
+      ) : null}
+
+      <RagPanel entityId={entityId} />
+
       <div className="investigation-grid">
-        {/* TIMELINE */}
         <section className="investigation-panel timeline-panel">
           <div className="panel-header">
             <h2>Timeline</h2>
-
-            <span>
-              {connections.length} connections
-            </span>
             <span>{activeConnections.length} connections</span>
           </div>
-
           <Timeline
             connections={activeConnections}
             selectedEvent={selectedEvent}
             onEventSelect={handleEventSelect}
           />
         </section>
-
-        {/* MAP */}
         <section className="investigation-panel map-panel">
           <div className="panel-header">
             <h2>Map</h2>
-
-            <span>
-              {locations.length} locations
-            </span>
+            <span>{locations.length} locations</span>
           </div>
-
           <InvestigationMap
             locations={locations}
             selectedLocation={selectedLocation}
@@ -205,6 +153,4 @@ const Investigation = () => {
       </div>
     </div>
   );
-};
-
-export default Investigation;
+}

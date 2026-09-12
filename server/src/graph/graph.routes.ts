@@ -1,5 +1,8 @@
 import { Router } from "express";
 
+import authMiddleware from "../middlewares/auth.middleware.js";
+import authorizeRoles from "../middlewares/authorize.middleware.js";
+
 import {
   createGraphNode,
   createGraphRelationship,
@@ -25,6 +28,8 @@ import {
 } from "./graphAnalytics.controller.js";
 
 const router = Router();
+
+router.use(authMiddleware, authorizeRoles("admin"));
 
 router.post("/nodes", createGraphNode);
 
